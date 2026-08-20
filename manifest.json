@@ -1,0 +1,16 @@
+{
+  "name": "Disponibilità tennis",
+  "short_name": "Disponibilità",
+  "description": "Chi può giocare e quando, circolo per circolo.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#14100E",
+  "theme_color": "#933F26",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

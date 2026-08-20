@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="terra" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0%" stop-color="#E27B4E"/>
+      <stop offset="55%" stop-color="#C75B3C"/>
+      <stop offset="100%" stop-color="#8E3A22"/>
+    </linearGradient>
+    <radialGradient id="palla" cx="36%" cy="30%" r="78%">
+      <stop offset="0%" stop-color="#F2FF8A"/>
+      <stop offset="68%" stop-color="#DCF23A"/>
+      <stop offset="100%" stop-color="#A9C400"/>
+    </radialGradient>
+  </defs>
+
+  <!-- la terra rossa -->
+  <rect width="512" height="512" rx="112" fill="url(#terra)"/>
+
+  <!-- campo visto dall'alto: corridoi del doppio, righe di servizio, riga centrale -->
+  <g fill="none" stroke="#F4EDE6" stroke-width="13" opacity=".95">
+    <rect x="116" y="62" width="280" height="388"/>
+    <path d="M150 62v388M362 62v388"/>
+    <path d="M150 156h212M150 356h212"/>
+    <path d="M256 156v200"/>
+    <path d="M256 62v20M256 430v20"/>
+  </g>
+
+  <!-- la rete, coi pali che sporgono -->
+  <path d="M88 256h336" stroke="#F4EDE6" stroke-width="22" stroke-linecap="round"/>
+
+  <!-- la pallina al centro -->
+  <circle cx="256" cy="256" r="52" fill="url(#palla)"/>
+  <g fill="none" stroke="#1E2A08" stroke-width="8" stroke-linecap="round" opacity=".8">
+    <path d="M219 221c16 21 16 49 0 70"/>
+    <path d="M293 221c-16 21-16 49 0 70"/>
+  </g>
+</svg>
