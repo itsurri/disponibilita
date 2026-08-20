@@ -288,6 +288,39 @@
   }
 
   .hint { font-size: 12.5px; color: var(--muted); padding: 0 4px; line-height: 1.55; }
+  [hidden] { display: none !important; }
+
+  /* ---------- account e sincronizzazione ---------- */
+  .acct {
+    width: 38px; height: 38px; flex: 0 0 auto; border-radius: 50%; position: relative;
+    border: 2px solid rgba(255,255,255,.55); background: rgba(0,0,0,.18);
+    display: flex; align-items: center; justify-content: center; color: #fff; overflow: visible;
+  }
+  .acct:active { transform: scale(.93); }
+  .acct img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+  /* pallino di stato: grigio scollegato, verde a posto, giallo sta salvando, rosso errore */
+  .acct .dot {
+    position: absolute; right: -2px; bottom: -2px; width: 12px; height: 12px; border-radius: 50%;
+    border: 2px solid var(--clay-deep); background: #8C8078;
+  }
+  .acct .dot.on   { background: #5FD16A; }
+  .acct .dot.busy { background: #FFD166; }
+  .acct .dot.err  { background: var(--danger); }
+
+  .acctpanel {
+    position: fixed; z-index: 60; right: 12px; top: calc(env(safe-area-inset-top) + 66px);
+    width: min(290px, calc(100vw - 24px));
+    background: var(--panel); border: 1px solid var(--line-strong); border-radius: 12px;
+    box-shadow: 0 18px 44px rgba(0,0,0,.6); padding: 15px;
+  }
+  .acctpanel h4 {
+    margin: 0 0 3px; font-family: var(--disp); text-transform: uppercase; letter-spacing: .08em;
+    font-size: 16px; color: var(--court); font-weight: 400;
+  }
+  .acctpanel .mail { font-size: 12.5px; color: var(--muted); word-break: break-all; margin-bottom: 4px; }
+  .acctpanel .st { font-size: 12.5px; color: var(--muted); margin-bottom: 12px; }
+  .acctpanel .btn { width: 100%; }
+  .acctpanel .btn + .btn { margin-top: 8px; }
   @media (min-width: 640px) {
     .grid { grid-template-columns: 44px repeat(7, minmax(0, 1fr)); gap: 5px; }
     .cell { height: 40px; }
@@ -308,8 +341,16 @@
       <div class="crumb" id="crumb"></div>
       <h1 id="title">Disponibilità</h1>
     </div>
+    <!-- compare solo se Firebase riesce a caricarsi: senza rete l'app resta com'è -->
+    <button class="acct" id="acct" hidden aria-label="Account e sincronizzazione">
+      <span id="acctIco">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
+      </span>
+      <span class="dot" id="acctDot"></span>
+    </button>
   </div>
 </header>
+<div class="acctpanel" id="acctPanel" hidden></div>
 
 <main class="wrap" id="main"></main>
 
@@ -336,7 +377,27 @@ function load() {
     if (raw && Array.isArray(raw.clubs)) data = raw;
   } catch (e) { /* dati illeggibili: si riparte da zero */ }
 }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} }
+/* Ogni salvataggio porta con sé il momento in cui è avvenuto: serve a decidere,
+   quando due dispositivi hanno versioni diverse, quale delle due è la più fresca. */
+function save() {
+  data.aggiornato = Date.now();
+  try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {}
+  if (window.syncPush) { try { window.syncPush(data); } catch (e) {} }
+}
+
+/* Ganci usati dal modulo Firebase, che vive in uno script a parte: se quello
+   non si carica (offline, CDN bloccata) qui non cambia niente e l'app funziona
+   lo stesso, solo senza sincronizzazione. */
+window.syncGetData = function () { return data; };
+window.syncHasData = function () { return data.clubs.length > 0; };
+window.syncAdopt = function (remote) {
+  data = (remote && Array.isArray(remote.clubs)) ? remote : { clubs: [] };
+  try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {}
+  // se stavamo guardando un circolo o una persona che nella nuova versione non
+  // esiste più, render() se ne accorge e torna indietro da solo
+  view.renaming = null;
+  render();
+};
 function uid() { return Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-3); }
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
@@ -852,6 +913,196 @@ document.getElementById('main').addEventListener('click', e => {
 
 load();
 render();
+</script>
+
+<!--
+  Sincronizzazione con Google, in uno script a parte apposta: è un modulo e
+  importa Firebase da internet, quindi se fallisce (offline, rete del circolo
+  che blocca, CDN giù) muore da solo senza portarsi dietro l'app, che continua
+  a funzionare in locale come prima.
+-->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import {
+  getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
+  getRedirectResult, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAyNueJOyiYu0mGP6fwPAeKD3ClhrDWcH8",
+  authDomain: "disponibilita-tennis.firebaseapp.com",
+  projectId: "disponibilita-tennis",
+  storageBucket: "disponibilita-tennis.firebasestorage.app",
+  messagingSenderId: "426048278878",
+  appId: "1:426048278878:web:ced9c6533f8e338151bfcf"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+const $acct  = document.getElementById('acct');
+const $ico   = document.getElementById('acctIco');
+const $dot   = document.getElementById('acctDot');
+const $panel = document.getElementById('acctPanel');
+
+let user = null;
+let stop = null;        // chiude l'ascolto sul documento quando si esce
+let timer = null;       // salvataggio ritardato: si scrive quando smetti di toccare
+let mineAt = 0;         // ora dell'ultima scrittura fatta da questo dispositivo
+let stato = 'off';      // off | ok | busy | err
+let nota = 'Non stai sincronizzando';
+
+const ICO_USER = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>';
+
+$acct.hidden = false;   // Firebase c'è: mostriamo il tasto
+
+function paint() {
+  $dot.className = 'dot' + (stato === 'ok' ? ' on' : stato === 'busy' ? ' busy' : stato === 'err' ? ' err' : '');
+  if (user && user.photoURL) {
+    $ico.innerHTML = '<img src="' + user.photoURL + '" alt="" referrerpolicy="no-referrer">';
+  } else {
+    $ico.innerHTML = ICO_USER;
+  }
+  if (!$panel.hidden) drawPanel();
+}
+function setStato(s, n) { stato = s; if (n) nota = n; paint(); }
+
+function drawPanel() {
+  if (user) {
+    $panel.innerHTML =
+      '<h4>Sincronizzazione</h4>' +
+      '<div class="mail">' + (user.email || '') + '</div>' +
+      '<div class="st">' + nota + '</div>' +
+      '<button class="btn ghost sm" id="btnOut">Esci</button>';
+    document.getElementById('btnOut').onclick = async () => {
+      $panel.hidden = true;
+      try { await signOut(auth); } catch (e) {}
+    };
+  } else {
+    $panel.innerHTML =
+      '<h4>Sincronizza</h4>' +
+      '<div class="st">Entra col tuo Google e ritrovi circoli, nomi e ore su tutti i tuoi dispositivi.</div>' +
+      '<button class="btn sm" id="btnIn">Entra con Google</button>';
+    document.getElementById('btnIn').onclick = () => { $panel.hidden = true; entra(); };
+  }
+}
+
+$acct.onclick = () => { $panel.hidden = !$panel.hidden; if (!$panel.hidden) drawPanel(); };
+document.addEventListener('click', e => {
+  if (!$panel.hidden && !$panel.contains(e.target) && !$acct.contains(e.target)) $panel.hidden = true;
+});
+
+/* Su iPhone, quando la pagina è aggiunta alla Home, la finestrella del login
+   non si apre: in quel caso si passa dal reindirizzamento. */
+async function entra() {
+  const prov = new GoogleAuthProvider();
+  try {
+    await signInWithPopup(auth, prov);
+  } catch (err) {
+    const c = (err && err.code) || '';
+    if (c.indexOf('popup') >= 0 || c.indexOf('operation-not-supported') >= 0 || c.indexOf('cancelled') >= 0) {
+      try { await signInWithRedirect(auth, prov); return; } catch (e) {}
+    }
+    setStato('err', 'Accesso non riuscito: ' + (c || 'errore'));
+  }
+}
+getRedirectResult(auth).catch(() => {});
+
+const rif = u => doc(db, 'utenti', u.uid);
+
+/* Prima cosa dopo il login: capire chi ha la versione buona.
+   Non si sovrascrive mai in silenzio, la più recente vince e lo diciamo. */
+async function allinea() {
+  const locale = window.syncGetData();
+  const localeVuoto = !window.syncHasData();
+  let remoto = null;
+  try {
+    const snap = await getDoc(rif(user));
+    if (snap.exists()) {
+      const raw = snap.data();
+      if (raw && typeof raw.dati === 'string') remoto = JSON.parse(raw.dati);
+      if (remoto) remoto.aggiornato = raw.aggiornato || remoto.aggiornato || 0;
+    }
+  } catch (e) {
+    setStato('err', 'Non riesco a leggere i dati salvati');
+    return;
+  }
+  const remotoVuoto = !remoto || !Array.isArray(remoto.clubs) || !remoto.clubs.length;
+
+  if (remotoVuoto && localeVuoto) { setStato('ok', 'Tutto sincronizzato'); return; }
+  if (remotoVuoto)  { await scrivi(locale, 'Ho caricato i dati di questo dispositivo'); return; }
+  if (localeVuoto)  { window.syncAdopt(remoto); setStato('ok', 'Ho scaricato i tuoi dati'); return; }
+
+  const tLoc = locale.aggiornato || 0, tRem = remoto.aggiornato || 0;
+  if (tRem > tLoc) {
+    window.syncAdopt(remoto);
+    setStato('ok', 'Ripresi i dati più recenti, salvati da un altro dispositivo');
+  } else {
+    await scrivi(locale, 'Questo dispositivo aveva i dati più recenti, ho aggiornato gli altri');
+  }
+}
+
+async function scrivi(d, msg) {
+  if (!user) return;
+  setStato('busy', 'Sto salvando…');
+  const quando = d.aggiornato || Date.now();
+  try {
+    await setDoc(rif(user), { dati: JSON.stringify(d), aggiornato: quando });
+    mineAt = quando;
+    setStato('ok', msg || 'Tutto sincronizzato');
+  } catch (e) {
+    // senza rete Firebase riprova da solo appena torna: non è un errore da urlare
+    setStato('err', navigator.onLine ? 'Salvataggio non riuscito' : 'Sei offline, salvo appena torna la rete');
+  }
+}
+
+/* L'app chiama questa a ogni modifica. Si aspetta un attimo di calma prima di
+   scrivere, così trascinare venti caselle non diventa venti scritture. */
+window.syncPush = function (d) {
+  if (!user) return;
+  setStato('busy', 'Sto salvando…');
+  clearTimeout(timer);
+  timer = setTimeout(() => scrivi(window.syncGetData()), 1200);
+};
+
+function ascolta() {
+  if (stop) { stop(); stop = null; }
+  stop = onSnapshot(rif(user), snap => {
+    // l'eco della nostra stessa scrittura non ci interessa
+    if (snap.metadata.hasPendingWrites || !snap.exists()) return;
+    const raw = snap.data();
+    if (!raw || typeof raw.dati !== 'string') return;
+    const quando = raw.aggiornato || 0;
+    if (quando <= mineAt) return;          // già nostro, o più vecchio
+    let remoto = null;
+    try { remoto = JSON.parse(raw.dati); } catch (e) { return; }
+    if (!remoto || !Array.isArray(remoto.clubs)) return;
+    remoto.aggiornato = quando;
+    mineAt = quando;
+    window.syncAdopt(remoto);
+    setStato('ok', 'Aggiornato da un altro dispositivo');
+  }, () => setStato('err', 'Sincronizzazione interrotta'));
+}
+
+onAuthStateChanged(auth, async u => {
+  user = u || null;
+  if (stop) { stop(); stop = null; }
+  clearTimeout(timer);
+  mineAt = 0;
+  if (!user) { setStato('off', 'Non stai sincronizzando'); return; }
+  setStato('busy', 'Controllo i dati…');
+  await allinea();
+  ascolta();
+});
+
+window.addEventListener('online',  () => { if (user) scrivi(window.syncGetData()); });
+window.addEventListener('offline', () => { if (user) setStato('err', 'Sei offline, salvo appena torna la rete'); });
+
+paint();
 </script>
 </body>
 </html>
