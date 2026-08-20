@@ -405,19 +405,19 @@
       </svg>
       <span class="lb">Circoli</span>
     </button>
-    <button class="tabbtn" data-tab="persone" aria-label="Persone">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="9" cy="8" r="3.3"/><path d="M2.8 19a6.2 6.2 0 0 1 12.4 0"/>
-        <path d="M16.2 5.2a3.3 3.3 0 0 1 0 5.6M17.5 13.4A6.2 6.2 0 0 1 21.2 19"/>
-      </svg>
-      <span class="lb">Persone</span>
-    </button>
     <button class="tabbtn" data-tab="disponibilita" aria-label="Disponibilità">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
         <rect x="3" y="4.5" width="18" height="16" rx="2.2"/><path d="M3 9.5h18M8 2.8v3.4M16 2.8v3.4"/>
         <path d="M7 13h3M7 16.7h3M14 13h3"/>
       </svg>
       <span class="lb">Disponibilità</span>
+    </button>
+    <button class="tabbtn" data-tab="incontri" aria-label="Incontri">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="7" cy="8" r="3.1"/><path d="M2.2 19a4.8 4.8 0 0 1 9.6 0"/>
+        <circle cx="17" cy="8" r="3.1"/><path d="M12.2 19a4.8 4.8 0 0 1 9.6 0"/>
+      </svg>
+      <span class="lb">Incontri</span>
     </button>
   </div>
   <div class="tabbar pill-side">
@@ -539,7 +539,7 @@ const nomiCircoli = p => (p.clubIds || []).map(id => (clubById(id) || {}).name).
 /* ========================================================================
    Navigazione
    ======================================================================== */
-const TITOLI = { circoli: 'Circoli', persone: 'Persone', disponibilita: 'Disponibilità' };
+const TITOLI = { circoli: 'Circoli', disponibilita: 'Disponibilità', incontri: 'Incontri' };
 
 function render() {
   const back = document.getElementById('back');
@@ -559,7 +559,7 @@ function render() {
     crumb.textContent = 'Disponibilità tennis';
     title.textContent = TITOLI[view.tab];
     if (view.tab === 'circoli') main.innerHTML = htmlCircoli();
-    else if (view.tab === 'persone') main.innerHTML = htmlPersone();
+    else if (view.tab === 'incontri') main.innerHTML = htmlIncontri();
     else main.innerHTML = htmlDisponibilita();
   } else if (view.screen === 'club') {
     crumb.textContent = 'Circolo';
@@ -617,30 +617,6 @@ function htmlCircoli() {
   return `<div class="stack"><div class="card"><ul class="list">${rows}</ul></div></div>`;
 }
 
-/* ========================================================================
-   Scheda PERSONE — tutte, con i circoli a cui appartengono
-   ======================================================================== */
-function htmlPersone() {
-  if (!data.people.length) {
-    return `<div class="card empty"><strong>Nessuna persona</strong>Tocca <b>+</b> qui sotto per aggiungere una persona e metterla in uno o più circoli.</div>`;
-  }
-  const rows = data.people.map(p => {
-    const cs = nomiCircoli(p);
-    return `<li><div class="row">
-      <button class="open" data-act="open-person" data-id="${p.id}">
-        ${lvBadge(p.lv)}
-        <span class="grow">
-          <span class="nm">${esc(p.name)}</span>
-          <span class="sub">${cs.length ? esc(cs.join(' · ')) : 'nessun circolo'}</span>
-        </span>
-        <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-      </button>
-      ${iconBtn('del-person', p.id, 'Elimina', ICO_TRASH, 'del')}
-    </div></li>`;
-  }).join('');
-  return `<div class="stack"><div class="card"><ul class="list">${rows}</ul></div></div>`;
-}
-
 /* scheda di una persona: nome, livello, circoli */
 function htmlPersona(p) {
   const n = countSlots(p);
@@ -677,24 +653,28 @@ function chipCircoli(sel) {
 }
 
 /* ========================================================================
-   Scheda DISPONIBILITÀ — chi ha segnato quante ore, e si entra nella griglia
+   Scheda DISPONIBILITÀ — le persone e le loro ore.
+   Toccando la riga si va dritti alla griglia, che è il lavoro di tutte le
+   settimane; la matita apre nome, livello e circoli, che si cambiano di rado.
    ======================================================================== */
 function htmlDisponibilita() {
   if (!data.people.length) {
-    return `<div class="card empty"><strong>Nessuna persona</strong>Aggiungi prima le persone col <b>+</b>, poi qui segni le loro ore.</div>`;
+    return `<div class="card empty"><strong>Nessuna persona</strong>Tocca <b>+</b> qui sotto per aggiungere una persona, con il suo livello e i circoli.</div>`;
   }
   const rows = data.people.map(p => {
     const n = countSlots(p);
+    const cs = nomiCircoli(p);
     return `<li><div class="row">
       <button class="open" data-act="open-grid" data-id="${p.id}">
         ${lvBadge(p.lv)}
         <span class="grow">
           <span class="nm">${esc(p.name)}</span>
-          <span class="sub">${n === 0 ? 'da compilare' : n + (n === 1 ? ' ora libera' : ' ore libere')}</span>
+          <span class="sub">${n === 0 ? 'da compilare' : n + (n === 1 ? ' ora' : ' ore')}${cs.length ? ' · ' + esc(cs.join(' · ')) : ' · nessun circolo'}</span>
         </span>
         <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
       </button>
       ${n ? iconBtn('clear-person', p.id, 'Cancella le sue ore', ICO_ERASER, 'eraser') : ''}
+      ${iconBtn('open-person', p.id, 'Nome, livello e circoli', ICO_PEN)}
     </div></li>`;
   }).join('');
   const qualcuno = data.people.some(p => countSlots(p) > 0);
@@ -702,6 +682,53 @@ function htmlDisponibilita() {
     <div class="card"><ul class="list">${rows}</ul></div>
     ${qualcuno ? `<button class="btn wipe" data-act="clear-all" style="width:100%">Azzera le ore di tutti</button>
       <p class="hint" style="text-align:center;margin:0">Cancella solo le ore. Nomi, livelli e circoli restano.</p>` : ''}
+  </div>`;
+}
+
+/* ========================================================================
+   Scheda INCONTRI — gli abbinamenti possibili, un circolo alla volta.
+   I circoli non si mescolano mai: ogni sfida nasce fra due iscritti allo
+   stesso circolo. Chi è iscritto a due circoli compare in tutti e due, ma
+   sempre accoppiato con gente di quel circolo.
+   ======================================================================== */
+function htmlIncontri() {
+  if (!data.clubs.length) {
+    return `<div class="card empty"><strong>Nessun circolo</strong>Gli incontri nascono dentro un circolo: creane uno col <b>+</b>.</div>`;
+  }
+  const LIMITE = 8;
+  let tagliato = false;
+
+  const sezioni = data.clubs.map(c => {
+    const ppl = membri(c.id);
+    const conLv = ppl.filter(p => p.lv);
+    const ms = findMatches(c.id);
+    const shown = view.allMatches ? ms : ms.slice(0, LIMITE);
+    if (ms.length > shown.length) tagliato = true;
+
+    let corpo;
+    if (ms.length) {
+      corpo = `<div class="card">${shown.map(m => `<div class="match">
+          <div class="mt-top">
+            <span class="pl">${lvBadge(m.a.lv)}<span>${esc(m.a.name)}</span></span>
+            <span class="vs">contro</span>
+            <span class="pl">${lvBadge(m.b.lv)}<span>${esc(m.b.name)}</span></span>
+          </div>
+          <div class="mt-slots">${fmtShared(m.shared).map(s => `<span class="slot">${s}</span>`).join('')}<span class="mt-n">${m.shared.length} ${m.shared.length === 1 ? 'ora' : 'ore'}</span></div>
+        </div>`).join('')}</div>`;
+    } else {
+      const perche = !ppl.length ? 'Nessuno è iscritto a questo circolo.'
+        : conLv.length < 2 ? 'Servono almeno due iscritti con il livello impostato.'
+        : !ppl.some(p => countSlots(p) > 0) ? 'Nessuno ha ancora segnato le sue ore.'
+        : 'Nessuna coppia di livello vicino ha ore libere in comune.';
+      corpo = `<div class="card empty" style="padding:20px">${perche}</div>`;
+    }
+    return `<div class="sechead"><h2>${esc(c.name)}</h2><span class="n">${ms.length ? ms.length + (ms.length === 1 ? ' incontro' : ' incontri') : '—'}</span></div>${corpo}`;
+  }).join('');
+
+  return `<div class="stack">
+    <p class="hint" style="margin:0 0 2px">Si sfidano solo livelli che distano al massimo <b style="color:var(--court)">1</b>: un <b style="color:var(--court)">3</b> gioca con 2, 3 e 4, mai con 1 o 5. Gli incontri restano dentro il circolo.</p>
+    ${sezioni}
+    ${tagliato ? `<button class="btn ghost" data-act="more-matches" style="width:100%">Mostra tutti gli incontri</button>` : ''}
   </div>`;
 }
 
@@ -853,23 +880,21 @@ function htmlClub(c) {
     return `<div class="card empty"><strong>Nessuno in questo circolo</strong>Apri una persona dalla scheda Persone e mettila in <b>${esc(c.name)}</b>, oppure creane una nuova col <b>+</b>.</div>`;
   }
   const senzaLv = ppl.filter(p => !p.lv).length;
-  const ms = findMatches(c.id);
-  const shown = view.allMatches ? ms : ms.slice(0, 25);
+  const nInc = findMatches(c.id).length;
 
-  const partite = ms.length
-    ? `<div class="card">${shown.map(m => `<div class="match">
-          <div class="mt-top">
-            <span class="pl">${lvBadge(m.a.lv)}<span>${esc(m.a.name)}</span></span>
-            <span class="vs">contro</span>
-            <span class="pl">${lvBadge(m.b.lv)}<span>${esc(m.b.name)}</span></span>
-          </div>
-          <div class="mt-slots">${fmtShared(m.shared).map(s => `<span class="slot">${s}</span>`).join('')}<span class="mt-n">${m.shared.length} ${m.shared.length === 1 ? 'ora' : 'ore'}</span></div>
-        </div>`).join('')}
-        ${ms.length > shown.length ? `<div style="padding:12px 14px;border-top:1px solid var(--line)"><button class="btn ghost sm" data-act="more-matches" style="width:100%">Mostra tutte le ${ms.length} partite</button></div>` : ''}
-      </div>`
-    : `<div class="card empty"><strong>Nessuna partita possibile</strong>${
-        ppl.filter(p => p.lv).length < 2 ? 'Servono almeno due persone col livello impostato.'
-        : 'Nessuna coppia di livello vicino (massimo 1 di differenza) ha ore libere in comune.'}</div>`;
+  const iscritti = `<div class="card"><ul class="list">${ppl.map(p => {
+    const n = countSlots(p);
+    return `<li><div class="row">
+      <button class="open" data-act="open-grid" data-id="${p.id}">
+        ${lvBadge(p.lv)}
+        <span class="grow">
+          <span class="nm">${esc(p.name)}</span>
+          <span class="sub">${n === 0 ? 'da compilare' : n + (n === 1 ? ' ora libera' : ' ore libere')}</span>
+        </span>
+        <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div></li>`;
+  }).join('')}</ul></div>`;
 
   const maxN = ppl.length;
   const min = Math.min(view.min, maxN);
@@ -911,9 +936,10 @@ function htmlClub(c) {
   }
 
   return `<div class="stack">
-    <div class="sechead"><h2>Partite possibili</h2><span class="n">${ms.length ? ms.length + (ms.length === 1 ? ' abbinamento' : ' abbinamenti') : ''}</span></div>
-    ${partite}
-    ${senzaLv ? `<p class="hint">${senzaLv === 1 ? 'Una persona non ha' : senzaLv + ' persone non hanno'} il livello: ${senzaLv === 1 ? 'impostalo' : 'impostali'} dalla scheda Persone per ${senzaLv === 1 ? 'vederla' : 'vederle'} qui.</p>` : ''}
+    <div class="sechead"><h2>Iscritti</h2><span class="n">${maxN} ${maxN === 1 ? 'persona' : 'persone'}</span></div>
+    ${iscritti}
+    ${senzaLv ? `<p class="hint">${senzaLv === 1 ? 'Una persona non ha' : senzaLv + ' persone non hanno'} il livello: ${senzaLv === 1 ? 'impostalo' : 'impostali'} con la matita in Disponibilità, altrimenti ${senzaLv === 1 ? 'resta' : 'restano'} fuori dagli incontri.</p>` : ''}
+    <button class="btn ghost" data-act="go-incontri" style="width:100%">${nInc ? nInc + (nInc === 1 ? ' incontro possibile' : ' incontri possibili') : 'Nessun incontro possibile'}</button>
     <div class="sechead" style="padding-top:8px"><h2>Chi c'è, ora per ora</h2></div>
     <div class="toolbar">
       <span class="pick"><label for="minSel">Mostra le ore con</label>
@@ -1032,6 +1058,7 @@ document.addEventListener('click', e => {
   else if (act === 'open-grid') { view.personId = id; view.screen = 'griglia'; closeModal(); render(); window.scrollTo(0,0); }
   else if (act === 'do-pick-grid') { view.personId = id; view.screen = 'griglia'; view.tab = 'disponibilita'; closeModal(); render(); window.scrollTo(0,0); }
   else if (act === 'more-matches') { view.allMatches = true; render(); }
+  else if (act === 'go-incontri') { view.screen = null; view.tab = 'incontri'; render(); window.scrollTo(0,0); }
   else if (act === 'peek') {
     const k = slotKey(+btn.dataset.d, +btn.dataset.h);
     view.sel = (view.sel === k) ? null : k;
@@ -1062,7 +1089,7 @@ document.addEventListener('click', e => {
     const lv = +document.getElementById('mLv').value;
     const scelti = Array.prototype.slice.call(document.querySelectorAll('#mClubs .pickchip.on')).map(b => b.dataset.id);
     data.people.push({ id: uid(), name: v, lv: lv, clubIds: scelti, slots: {} });
-    save(); closeModal(); view.tab = 'persone'; view.screen = null; render();
+    save(); closeModal(); view.tab = 'disponibilita'; view.screen = null; render();
   }
 
   /* --- chip dei circoli: valgono sia nella finestra sia nella scheda persona --- */
@@ -1079,7 +1106,7 @@ document.addEventListener('click', e => {
     p.name = v;
     p.lv = +document.getElementById('pLv').value;
     p.clubIds = Array.prototype.slice.call(document.querySelectorAll('#pClubs .pickchip.on')).map(b => b.dataset.id);
-    save(); view.screen = null; view.tab = 'persone'; render(); window.scrollTo(0,0);
+    save(); view.screen = null; view.tab = 'disponibilita'; render(); window.scrollTo(0,0);
   }
 
   /* --- cancellazioni --- */
