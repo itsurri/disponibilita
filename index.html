@@ -3,99 +3,113 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#17924A">
+<meta name="theme-color" content="#933F26">
 <meta name="description" content="Raccogli le disponibilità a giocare a tennis, circolo per circolo.">
 <title>Disponibilità tennis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@400;500;600;700;800&display=swap">
 <style>
-  /* Chiaro di base, scuro se il dispositivo lo chiede: i colori sono tutti
-     definiti qui sotto e ridefiniti nel blocco scuro, mai solo in uno dei due. */
+  /* Stile campo da tennis: terra rossa, righe bianche, titoli condensati.
+     Un solo tema, dichiarato per intero: il fondo scuro è una scelta, non
+     l'impostazione del dispositivo. */
   :root {
-    color-scheme: light dark;
-    --bg: #F4F6F5;
-    --card: #FFFFFF;
-    --fg: #12171A;
-    --muted: #6A757C;
-    --line: #E2E7E6;
-    --line-strong: #CFD8D5;
-    --accent: #17924A;
-    --accent-ink: #FFFFFF;
-    --accent-soft: #E7F4EC;
-    --danger: #C0392B;
-    --shadow: 0 1px 2px rgba(16,32,24,.06), 0 8px 24px rgba(16,32,24,.06);
-    --radius: 14px;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0D1011;
-      --card: #171B1D;
-      --fg: #EDF1F0;
-      --muted: #96A2A6;
-      --line: #262D30;
-      --line-strong: #333C40;
-      --accent: #2FBE66;
-      --accent-ink: #06210F;
-      --accent-soft: #162C1F;
-      --danger: #FF6B5E;
-      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
-    }
+    color-scheme: dark;
+    --clay:        #C75B3C;
+    --clay-2:      #E27B4E;
+    --clay-deep:   #8E3A22;
+    --clay-ink:    #FFF6F1;
+    --court:       #EFE7DE;   /* bianco delle righe */
+    --bg:          #14100E;
+    --panel:       #1E1917;
+    --panel-2:     #2A2320;
+    --fg:          #F6F1EC;
+    --muted:       #A79488;
+    --line:        #332B26;
+    --line-strong: #4A3D36;
+    --danger:      #FF7A6B;
+    --radius:      12px;
+    --disp:        "Bebas Neue", "Oswald", "Arial Narrow", Impact, sans-serif;
+    --text:        "Work Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body {
     background: var(--bg); color: var(--fg);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    font-size: 16px; line-height: 1.45;
-    -webkit-text-size-adjust: 100%;
-    padding-bottom: 40px;
+    font-family: var(--text); font-size: 16px; line-height: 1.45;
+    -webkit-text-size-adjust: 100%; padding-bottom: 44px;
   }
   button, input, select { font: inherit; color: inherit; }
   button { cursor: pointer; border: none; background: none; }
-  h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
+  h1, h2, h3 { margin: 0; }
+  .wrap { width: 100%; max-width: 800px; margin: 0 auto; padding: 0 14px; }
 
-  .wrap { width: 100%; max-width: 780px; margin: 0 auto; padding: 0 14px; }
+  /* titoli e etichette: condensato maiuscolo, da tabellone */
+  .disp { font-family: var(--disp); text-transform: uppercase; letter-spacing: .04em; font-weight: 400; }
 
-  /* ---------- testata ---------- */
+  /* ---------- testata: striscia di terra con le righe del campo ---------- */
   .top {
     position: sticky; top: 0; z-index: 20;
-    background: color-mix(in srgb, var(--bg) 88%, transparent);
-    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--line);
+    background: linear-gradient(178deg, var(--clay) 0%, var(--clay-deep) 100%);
+    border-bottom: 3px solid var(--court);
+  }
+  /* Righe del campo: la riga di servizio poco sopra il fondo, e il segno di
+     metà campo che tocca la riga di fondo, come sul campo vero. */
+  .top::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background:
+      linear-gradient(180deg, transparent calc(100% - 15px), rgba(255,255,255,.20) calc(100% - 15px), rgba(255,255,255,.20) calc(100% - 13px), transparent calc(100% - 13px)),
+      linear-gradient(90deg, transparent calc(50% - 1.5px), rgba(255,255,255,.6) calc(50% - 1.5px), rgba(255,255,255,.6) calc(50% + 1.5px), transparent calc(50% + 1.5px));
+    background-repeat: no-repeat;
+    background-size: 100% 100%, 100% 11px;
+    background-position: 0 0, 0 100%;
   }
   .topbar {
+    position: relative; z-index: 1;
     display: flex; align-items: center; gap: 12px;
-    padding-top: calc(env(safe-area-inset-top) + 12px); padding-bottom: 12px;
+    padding-top: calc(env(safe-area-inset-top) + 13px); padding-bottom: 15px;
   }
   .back {
     width: 38px; height: 38px; flex: 0 0 auto; border-radius: 50%;
-    border: 1px solid var(--line-strong); background: var(--card);
-    display: none; align-items: center; justify-content: center; color: var(--fg);
+    border: 2px solid rgba(255,255,255,.55); background: rgba(0,0,0,.16);
+    display: none; align-items: center; justify-content: center; color: #fff;
   }
   .back.show { display: flex; }
-  .back:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .back:active { transform: scale(.93); }
   .titles { min-width: 0; flex: 1; }
-  .crumb { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
-  .titles h1 { font-size: 21px; font-weight: 750; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-  /* ---------- blocchi ---------- */
-  .card {
-    background: var(--card); border: 1px solid var(--line);
-    border-radius: var(--radius); box-shadow: var(--shadow);
+  .crumb {
+    font-family: var(--disp); text-transform: uppercase; letter-spacing: .16em;
+    font-size: 12px; color: rgba(255,255,255,.72); line-height: 1.1;
   }
-  main { padding-top: 16px; }
+  .titles h1 {
+    font-family: var(--disp); text-transform: uppercase; letter-spacing: .03em;
+    font-size: 30px; line-height: 1.02; color: #fff; font-weight: 400;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  main { padding-top: 18px; }
   .stack > * + * { margin-top: 14px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
+
+  /* intestazione di sezione, con la riga del campo sotto */
+  .sechead { display: flex; align-items: center; gap: 10px; padding: 2px 3px 9px; }
+  .sechead h2 { font-family: var(--disp); text-transform: uppercase; letter-spacing: .1em; font-size: 15px; color: var(--court); font-weight: 400; }
+  .sechead .n { margin-left: auto; font-size: 12px; color: var(--muted); }
+  .sechead::after { content: none; }
 
   /* ---------- riga per aggiungere ---------- */
-  /* va a capo da sola: sul telefono il nome prende tutta la riga e livello +
-     tasto scendono sotto, sul computer sta tutto in fila */
   .addrow { display: flex; flex-wrap: wrap; gap: 8px; }
   .addrow input {
-    flex: 1 1 210px; min-width: 0; height: 46px; padding: 0 14px;
-    background: var(--card); border: 1px solid var(--line-strong);
-    border-radius: 12px; outline: none;
+    flex: 1 1 210px; min-width: 0; height: 48px; padding: 0 14px;
+    background: var(--panel); border: 1px solid var(--line-strong);
+    border-radius: 10px; outline: none; color: var(--fg);
   }
+  .addrow input::placeholder { color: var(--muted); }
+  .addrow input:focus { border-color: var(--clay-2); box-shadow: 0 0 0 3px rgba(226,123,78,.18); }
   .addrow select {
-    flex: 0 0 auto; height: 46px; padding: 0 32px 0 12px; border-radius: 12px;
-    background: var(--card); border: 1px solid var(--line-strong); outline: none;
+    flex: 0 0 auto; height: 48px; padding: 0 32px 0 13px; border-radius: 10px;
+    background: var(--panel); border: 1px solid var(--line-strong); outline: none; color: var(--fg);
+    font-family: var(--disp); text-transform: uppercase; letter-spacing: .06em; font-size: 15px;
     -webkit-appearance: none; appearance: none;
     background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
     background-position: right 15px center, right 10px center;
@@ -103,150 +117,182 @@
   }
   .addrow .btn { flex: 1 1 auto; }
   @media (min-width: 560px) { .addrow .btn { flex: 0 0 auto; } }
-  .addrow input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
   .btn {
-    height: 46px; padding: 0 18px; border-radius: 12px; flex: 0 0 auto;
-    background: var(--accent); color: var(--accent-ink); font-weight: 700;
+    height: 48px; padding: 0 20px; border-radius: 10px; flex: 0 0 auto;
+    background: var(--clay); color: var(--clay-ink);
+    font-family: var(--disp); text-transform: uppercase; letter-spacing: .07em; font-size: 17px;
+    border: 1px solid var(--clay-2);
   }
-  .btn:hover { filter: brightness(1.06); }
-  .btn:disabled { opacity: .45; cursor: default; filter: none; }
-  .btn.ghost { background: var(--card); color: var(--fg); border: 1px solid var(--line-strong); font-weight: 600; }
-  .btn.ghost:hover { background: var(--accent-soft); border-color: var(--accent); }
-  .btn.sm { height: 38px; padding: 0 14px; font-size: 14px; }
+  .btn:hover { background: var(--clay-2); }
+  .btn:active { transform: scale(.98); }
+  .btn.ghost { background: transparent; color: var(--fg); border: 1px solid var(--line-strong); }
+  .btn.ghost:hover { background: var(--panel-2); border-color: var(--clay); color: var(--clay-2); }
+  .btn.sm { height: 40px; padding: 0 14px; font-size: 15px; }
+  .btn.wipe { background: transparent; color: var(--danger); border: 1px solid rgba(255,122,107,.4); }
+  .btn.wipe:hover { background: rgba(255,122,107,.12); border-color: var(--danger); color: var(--danger); }
 
   /* ---------- elenchi ---------- */
   .list { list-style: none; margin: 0; padding: 0; }
   .list li + li { border-top: 1px solid var(--line); }
-  .row { display: flex; align-items: center; gap: 6px; padding: 4px 6px 4px 4px; }
+  .row { display: flex; align-items: center; gap: 4px; padding: 4px 6px 4px 4px; }
   .row .open {
     flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px;
-    padding: 12px 8px; border-radius: 10px; text-align: left; color: inherit;
+    padding: 12px 8px; border-radius: 9px; text-align: left; color: inherit;
   }
-  .row .open:hover { background: var(--accent-soft); }
-  /* nome sopra, riepilogo sotto: da inline andrebbero a capo uno dentro l'altro */
-  .row .nm { display: block; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .row .sub { display: block; font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .open:hover { background: var(--panel-2); }
+  .row .nm { display: block; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .sub {
+    display: block; font-size: 12px; color: var(--muted); margin-top: 1px;
+    font-family: var(--disp); text-transform: uppercase; letter-spacing: .07em;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
   .row .grow { flex: 1; min-width: 0; }
-  .chev { color: var(--muted); flex: 0 0 auto; }
+  .chev { color: var(--line-strong); flex: 0 0 auto; }
   .iconbtn {
-    width: 36px; height: 36px; flex: 0 0 auto; border-radius: 9px;
+    width: 34px; height: 34px; flex: 0 0 auto; border-radius: 8px;
     display: flex; align-items: center; justify-content: center; color: var(--muted);
   }
-  .iconbtn:hover { background: var(--accent-soft); color: var(--fg); }
-  .iconbtn.del:hover { background: color-mix(in srgb, var(--danger) 14%, transparent); color: var(--danger); }
-  .renameform { display: flex; gap: 6px; flex: 1; padding: 6px; }
+  .iconbtn:hover { background: var(--panel-2); color: var(--fg); }
+  .iconbtn.del:hover { background: rgba(255,122,107,.14); color: var(--danger); }
+  .iconbtn.eraser:hover { background: rgba(226,123,78,.16); color: var(--clay-2); }
+  .renameform { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; padding: 6px; }
   .renameform input {
-    flex: 1; min-width: 0; height: 38px; padding: 0 10px;
-    background: var(--bg); border: 1px solid var(--accent); border-radius: 9px; outline: none;
+    flex: 1 1 130px; min-width: 0; height: 40px; padding: 0 10px; color: var(--fg);
+    background: var(--bg); border: 1px solid var(--clay); border-radius: 8px; outline: none;
+  }
+  .renameform select {
+    flex: 0 0 auto; height: 40px; padding: 0 28px 0 10px; border-radius: 8px; color: var(--fg);
+    background: var(--bg); border: 1px solid var(--line-strong); outline: none;
+    font-family: var(--disp); text-transform: uppercase; letter-spacing: .06em; font-size: 14px;
+    -webkit-appearance: none; appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position: right 13px center, right 8px center;
+    background-size: 5px 5px, 5px 5px; background-repeat: no-repeat;
   }
 
-  .empty { padding: 28px 18px; text-align: center; color: var(--muted); }
-  .empty strong { display: block; color: var(--fg); font-size: 15px; margin-bottom: 4px; }
+  .empty { padding: 30px 20px; text-align: center; color: var(--muted); font-size: 13.5px; line-height: 1.6; }
+  .empty strong {
+    display: block; color: var(--court); margin-bottom: 5px;
+    font-family: var(--disp); text-transform: uppercase; letter-spacing: .08em; font-size: 17px; font-weight: 400;
+  }
 
-  /* ---------- schede persone / riepilogo ---------- */
-  .tabs { display: flex; gap: 6px; padding: 5px; background: var(--card); border: 1px solid var(--line); border-radius: 13px; }
+  /* ---------- schede ---------- */
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--line); }
   .tabs button {
-    flex: 1; height: 40px; border-radius: 9px; font-weight: 650; color: var(--muted);
+    flex: 1; height: 46px; color: var(--muted); position: relative;
+    font-family: var(--disp); text-transform: uppercase; letter-spacing: .1em; font-size: 17px;
   }
-  .tabs button[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
+  .tabs button[aria-selected="true"] { color: var(--court); }
+  /* la riga del campo che segue la scheda scelta */
+  .tabs button[aria-selected="true"]::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 3px; background: var(--clay-2);
+  }
 
-  /* ---------- griglia oraria ---------- */
+  /* ---------- griglia oraria: il campo ---------- */
   .gridbox { padding: 12px; }
-  .grid {
-    display: grid;
-    grid-template-columns: 34px repeat(7, minmax(0, 1fr));
-    gap: 4px;
-  }
+  .grid { display: grid; grid-template-columns: 34px repeat(7, minmax(0, 1fr)); gap: 3px; }
   .gh {
     display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700; color: var(--muted);
-    padding: 4px 0; border-radius: 7px; text-transform: uppercase; letter-spacing: .02em;
+    font-family: var(--disp); text-transform: uppercase; letter-spacing: .05em;
+    font-size: 13px; color: var(--muted); padding: 4px 0; border-radius: 6px;
   }
-  .gh.day:hover, .gh.hour:hover { background: var(--accent-soft); color: var(--accent); }
-  .gh.hour { font-variant-numeric: tabular-nums; }
+  .gh.day:hover, .gh.hour:hover { background: var(--panel-2); color: var(--clay-2); }
   .cell {
-    height: clamp(34px, 9vw, 42px);
-    border-radius: 8px;
-    border: 1px solid var(--line-strong);
-    background: var(--card);
-    transition: background .12s, border-color .12s;
+    height: clamp(34px, 9vw, 42px); border-radius: 6px;
+    border: 1px solid var(--line-strong); background: var(--bg);
+    transition: background .1s, border-color .1s;
   }
-  .cell[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); }
-  .cell:hover { border-color: var(--accent); }
+  /* casella accesa: la terra rossa del campo */
+  .cell[aria-pressed="true"] {
+    background: linear-gradient(180deg, var(--clay-2), var(--clay));
+    border-color: var(--clay-2);
+  }
+  .cell:hover { border-color: var(--clay); }
   .grid.painting { -webkit-user-select: none; user-select: none; }
-  .legend { margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+  .legend { margin-top: 11px; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+  .legend b { color: var(--court); font-weight: 600; }
 
-  /* celle del riepilogo: mostrano quante persone sono libere.
-     Sotto la soglia restano una velatura leggera col numero in grigio; da lì in
-     su diventano verde pieno. Niente sfumature intermedie sotto il testo: in
-     tema chiaro il bianco su verde slavato non si leggerebbe. */
+  /* celle del riepilogo */
   .cell.count {
     display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums;
-    color: var(--muted);
-    background: color-mix(in srgb, var(--accent) calc(var(--f) * 100%), var(--card));
+    font-family: var(--disp); font-size: 16px; letter-spacing: .02em; color: var(--muted);
+    background: color-mix(in srgb, var(--clay) calc(var(--f) * 100%), var(--bg));
     border-color: var(--line);
   }
-  .cell.count.ok { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-  .cell.count.zero { color: color-mix(in srgb, var(--muted) 45%, transparent); }
-  .cell.count.sel { outline: 3px solid var(--fg); outline-offset: -1px; }
+  .cell.count.ok {
+    background: linear-gradient(180deg, var(--clay-2), var(--clay));
+    color: var(--clay-ink); border-color: var(--clay-2);
+  }
+  .cell.count.zero { color: #4A3D36; }
+  .cell.count.sel { outline: 2px solid var(--court); outline-offset: -1px; }
 
   .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .toolbar .spacer { flex: 1; }
-  .pick { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
+  .pick { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .pick b { color: var(--court); font-weight: 700; }
   .pick select {
-    height: 38px; padding: 0 30px 0 10px; border-radius: 9px;
-    background: var(--card); border: 1px solid var(--line-strong); outline: none;
+    height: 40px; padding: 0 30px 0 11px; border-radius: 9px; color: var(--fg);
+    background: var(--panel); border: 1px solid var(--line-strong); outline: none;
+    font-family: var(--disp); text-transform: uppercase; letter-spacing: .05em; font-size: 15px;
     -webkit-appearance: none; appearance: none;
     background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
     background-position: right 14px center, right 9px center;
     background-size: 5px 5px, 5px 5px; background-repeat: no-repeat;
   }
-  .who { padding: 14px; }
-  .who h3 { font-size: 15px; margin-bottom: 8px; }
+
+  .who { padding: 15px; }
+  .who h3 {
+    font-family: var(--disp); text-transform: uppercase; letter-spacing: .06em;
+    font-size: 18px; color: var(--court); font-weight: 400; margin-bottom: 10px;
+  }
   .chips { display: flex; flex-wrap: wrap; gap: 7px; }
   .chip {
-    font-size: 13px; font-weight: 600; padding: 6px 11px; border-radius: 20px;
-    background: var(--accent-soft); color: var(--accent);
-    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    font-size: 13px; font-weight: 600; padding: 6px 11px; border-radius: 8px;
+    background: rgba(199,91,60,.18); color: var(--clay-2); border: 1px solid rgba(199,91,60,.45);
   }
   .chip.off { background: transparent; color: var(--muted); border-color: var(--line); }
 
-  /* pastiglia del livello, stessi colori del sito del circolo */
+  /* pastiglia livello: tacca squadrata, colori del sito del circolo */
   .lv {
     display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
-    min-width: 26px; height: 22px; padding: 0 6px; border-radius: 7px;
-    font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: .01em;
+    min-width: 26px; height: 26px; padding: 0 6px; border-radius: 6px;
+    font-family: var(--disp); font-size: 16px; letter-spacing: .02em;
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,.22);
   }
-  .lv.none { background: transparent; color: var(--muted); border: 1px dashed var(--line-strong); }
+  .lv.none { background: transparent; color: var(--muted); border: 1px dashed var(--line-strong); box-shadow: none; }
 
   /* ---------- partite possibili ---------- */
-  .match { padding: 12px 14px; }
+  .match { padding: 13px 14px; }
   .match + .match { border-top: 1px solid var(--line); }
-  .mt-top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
-  .pl { display: inline-flex; align-items: center; gap: 7px; font-weight: 650; min-width: 0; }
+  .mt-top { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 9px; }
+  .pl { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; min-width: 0; }
   .pl span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .vs { font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
-  .mt-slots { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-  .slot {
-    font-size: 12.5px; font-weight: 650; padding: 4px 9px; border-radius: 8px;
-    background: var(--accent-soft); color: var(--accent);
-    border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
-    font-variant-numeric: tabular-nums;
+  .vs {
+    font-family: var(--disp); text-transform: uppercase; letter-spacing: .12em;
+    font-size: 13px; color: var(--clay-2);
   }
-  .mt-n { margin-left: auto; font-size: 12px; color: var(--muted); white-space: nowrap; }
+  /* il conteggio chiude la riga degli orari: messo in alto restava spesso da
+     solo su una riga tutta sua */
+  .mt-n {
+    margin-left: auto; align-self: center;
+    font-family: var(--disp); text-transform: uppercase; letter-spacing: .07em;
+    font-size: 13px; color: var(--muted); white-space: nowrap; padding-left: 8px;
+  }
+  .mt-slots { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 9px; }
+  .slot {
+    font-family: var(--disp); font-size: 15px; letter-spacing: .04em;
+    padding: 3px 10px; border-radius: 7px;
+    background: rgba(199,91,60,.16); color: var(--clay-2);
+    border: 1px solid rgba(199,91,60,.42);
+  }
 
-  .sechead { display: flex; align-items: baseline; gap: 10px; padding: 0 4px 8px; }
-  .sechead h2 { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
-  .sechead .n { font-size: 13px; color: var(--muted); margin-left: auto; }
-
-  .hint { font-size: 13px; color: var(--muted); padding: 0 4px; }
-
+  .hint { font-size: 12.5px; color: var(--muted); padding: 0 4px; line-height: 1.55; }
   @media (min-width: 640px) {
-    .grid { grid-template-columns: 44px repeat(7, minmax(0, 1fr)); gap: 6px; }
+    .grid { grid-template-columns: 44px repeat(7, minmax(0, 1fr)); gap: 5px; }
     .cell { height: 40px; }
-    .gh { font-size: 13px; }
-    .titles h1 { font-size: 24px; }
+    .gh { font-size: 14px; }
+    .titles h1 { font-size: 34px; }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -256,7 +302,7 @@
 <header class="top">
   <div class="wrap topbar">
     <button class="back" id="back" aria-label="Indietro">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
     <div class="titles">
       <div class="crumb" id="crumb"></div>
@@ -271,8 +317,7 @@
 'use strict';
 
 /* ========================================================================
-   Dati
-   Tutto sta in questo dispositivo: nessun account, nessun server.
+   Dati — tutto in questo dispositivo, nessun account e nessun server
    ======================================================================== */
 const KEY = 'disponibilita_tennis_v1';
 
@@ -291,9 +336,7 @@ function load() {
     if (raw && Array.isArray(raw.clubs)) data = raw;
   } catch (e) { /* dati illeggibili: si riparte da zero */ }
 }
-function save() {
-  try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {}
-}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} }
 function uid() { return Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-3); }
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
@@ -307,8 +350,7 @@ const LV_COLOR = { 1:'#86EFAC', 2:'#16A34A', 3:'#EAB308', 4:'#F97316', 5:'#EF444
 const MAX_GAP = 1;
 const canPlay = (a, b) => !!a.lv && !!b.lv && Math.abs(a.lv - b.lv) <= MAX_GAP;
 
-/* nero o bianco, quello che si legge meglio sul colore del livello (formula WCAG):
-   serve perché le pastiglie restino leggibili sia in tema chiaro che scuro */
+/* nero o bianco, quello che si legge meglio sul colore del livello (formula WCAG) */
 function inkFor(hex) {
   const h = hex.replace('#','');
   const lin = c => { c /= 255; return c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4); };
@@ -328,6 +370,7 @@ const club   = () => data.clubs.find(c => c.id === view.clubId) || null;
 const person = () => { const c = club(); return c ? (c.people.find(p => p.id === view.personId) || null) : null; };
 const slotKey = (d, h) => d + '-' + h;
 const countSlots = p => Object.keys(p.slots || {}).length;
+const clubHasSlots = c => c.people.some(p => countSlots(p) > 0);
 
 /* ========================================================================
    Testata e navigazione
@@ -354,7 +397,6 @@ function render() {
     title.textContent = p.name;
     renderPerson(c, p);
   } else {
-    // il circolo o la persona non ci sono più: si torna indietro
     view.screen = 'clubs'; view.clubId = null; view.personId = null;
     render();
   }
@@ -381,7 +423,7 @@ function renderClubs() {
           <span class="nm">${esc(c.name)}</span>
           <span class="sub">${n === 0 ? 'nessuna persona' : n + (n === 1 ? ' persona' : ' persone')}</span>
         </span>
-        <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
       </button>
       ${iconBtn('rename-club', c.id, 'Rinomina', ICO_PEN)}
       ${iconBtn('del-club', c.id, 'Elimina', ICO_TRASH, 'del')}
@@ -423,19 +465,27 @@ function peopleHtml(c) {
           <span class="nm">${esc(p.name)}</span>
           <span class="sub">${!p.lv ? 'livello da impostare' : (n === 0 ? 'da compilare' : n + (n === 1 ? ' ora libera' : ' ore libere'))}</span>
         </span>
-        <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
       </button>
+      ${n ? iconBtn('clear-person', p.id, 'Cancella le sue ore', ICO_ERASER, 'eraser') : ''}
       ${iconBtn('rename-person', p.id, 'Modifica', ICO_PEN)}
       ${iconBtn('del-person', p.id, 'Elimina', ICO_TRASH, 'del')}
     </div></li>`;
   }).join('');
+
+  // Le disponibilità cambiano ogni settimana: il tasto per azzerarle tutte
+  // compare solo quando c'è davvero qualcosa da cancellare.
+  const wipe = clubHasSlots(c)
+    ? `<button class="btn wipe" data-act="clear-club" style="width:100%">Azzera le ore di tutti</button>
+       <p class="hint" style="text-align:center;margin:8px 0 0">Cancella solo le ore. Nomi e livelli restano.</p>`
+    : '';
 
   return `<form class="addrow" data-act="add-person">
       <input name="nome" placeholder="Nome della persona" maxlength="60" autocomplete="off" aria-label="Nome della persona">
       <select name="lv" aria-label="Livello">${lvOptions(3)}</select>
       <button class="btn" type="submit">Aggiungi</button>
     </form>
-    ${c.people.length ? `<div class="card"><ul class="list">${rows}</ul></div>`
+    ${c.people.length ? `<div class="card"><ul class="list">${rows}</ul></div>${wipe}`
       : `<div class="card empty"><strong>Nessuna persona</strong>Aggiungi i nomi col loro livello, poi tocca ognuno per segnare quando può giocare.</div>`}`;
 }
 
@@ -447,7 +497,7 @@ function renderPerson(c, p) {
   document.getElementById('main').innerHTML = `
     <div class="stack">
       <div class="toolbar">
-        <span class="pick"><b id="oreTot" style="color:var(--fg)">${n}</b> ${n === 1 ? 'ora segnata' : 'ore segnate'}</span>
+        <span class="pick"><b id="oreTot">${n}</b> ${n === 1 ? 'ora segnata' : 'ore segnate'}</span>
         <span class="spacer"></span>
         <button class="btn ghost sm" data-act="all">Tutta la settimana</button>
         <button class="btn ghost sm" data-act="none">Pulisci</button>
@@ -497,24 +547,20 @@ function wirePersonGrid() {
   if (!grid) return;
   const p = person();
   if (!p) return;
-
-  function apply(d, hr, on) { setSlot(p, d, hr, on); }
+  const apply = (d, hr, on) => setSlot(p, d, hr, on);
 
   grid.addEventListener('click', e => {
     const cell = e.target.closest('.cell');
     if (cell) {
-      const d = +cell.dataset.d, hr = +cell.dataset.h;
-      apply(d, hr, cell.getAttribute('aria-pressed') !== 'true');
-      save(); refreshCount(p);
-      return;
+      apply(+cell.dataset.d, +cell.dataset.h, cell.getAttribute('aria-pressed') !== 'true');
+      save(); refreshCount(p); return;
     }
     const col = e.target.closest('[data-act="col"]');
     if (col) {
       const d = +col.dataset.d;
       const allOn = HOURS.every(hr => p.slots && p.slots[slotKey(d, hr)]);
       HOURS.forEach(hr => apply(d, hr, !allOn));
-      save(); refreshCount(p);
-      return;
+      save(); refreshCount(p); return;
     }
     const row = e.target.closest('[data-act="row"]');
     if (row) {
@@ -549,7 +595,7 @@ function wirePersonGrid() {
 }
 
 /* ========================================================================
-   Riepilogo — quante persone sono libere in ogni ora
+   Riepilogo — partite possibili e chi c'è ora per ora
    ======================================================================== */
 function freeAt(c, d, hr) {
   const k = slotKey(d, hr);
@@ -601,7 +647,7 @@ function matchesHtml(c) {
   const withLv = c.people.filter(p => p.lv).length;
   const senzaLv = c.people.length - withLv;
   const nota = senzaLv
-    ? `<p class="hint" style="padding:6px 4px 0">${senzaLv === 1 ? 'Una persona non ha' : senzaLv + ' persone non hanno'} il livello: ${senzaLv === 1 ? 'impostalo' : 'impostali'} con la matita per ${senzaLv === 1 ? 'vederla' : 'vederle'} qui.</p>`
+    ? `<p class="hint" style="padding:8px 4px 0">${senzaLv === 1 ? 'Una persona non ha' : senzaLv + ' persone non hanno'} il livello: ${senzaLv === 1 ? 'impostalo' : 'impostali'} con la matita per ${senzaLv === 1 ? 'vederla' : 'vederle'} qui.</p>`
     : '';
 
   const ms = findMatches(c);
@@ -613,9 +659,8 @@ function matchesHtml(c) {
             <span class="pl">${lvBadge(m.a.lv)}<span>${esc(m.a.name)}</span></span>
             <span class="vs">contro</span>
             <span class="pl">${lvBadge(m.b.lv)}<span>${esc(m.b.name)}</span></span>
-            <span class="mt-n">${m.shared.length} ${m.shared.length === 1 ? 'ora' : 'ore'}</span>
           </div>
-          <div class="mt-slots">${fmtShared(m.shared).map(s => `<span class="slot">${s}</span>`).join('')}</div>
+          <div class="mt-slots">${fmtShared(m.shared).map(s => `<span class="slot">${s}</span>`).join('')}<span class="mt-n">${m.shared.length} ${m.shared.length === 1 ? 'ora' : 'ore'}</span></div>
         </div>`).join('')}
         ${ms.length > shown.length ? `<div style="padding:12px 14px;border-top:1px solid var(--line)"><button class="btn ghost sm" data-act="more-matches" style="width:100%">Mostra tutte le ${ms.length} partite</button></div>` : ''}
       </div>`
@@ -626,13 +671,13 @@ function matchesHtml(c) {
   return `<div class="sechead"><h2>Partite possibili</h2><span class="n">${ms.length ? ms.length + (ms.length === 1 ? ' abbinamento' : ' abbinamenti') : ''}</span></div>
     ${body}${nota}`;
 }
+
 function summaryHtml(c) {
   if (!c.people.length) {
     return `<div class="card empty"><strong>Ancora niente da incrociare</strong>Aggiungi le persone e segna le loro ore: qui vedrai quando si trovano tutte insieme.</div>`;
   }
   const maxN = c.people.length;
   const min = Math.min(view.min, maxN);
-
   const opts = [];
   for (let i = 1; i <= maxN; i++) opts.push(`<option value="${i}"${i === min ? ' selected' : ''}>almeno ${i}</option>`);
 
@@ -650,7 +695,7 @@ function summaryHtml(c) {
       if (n === 0) cls.push('zero');
       if (ok) cls.push('ok');
       if (view.sel === slotKey(d, hr)) cls.push('sel');
-      g += `<button class="${cls.join(' ')}" style="--f:${(f * 0.22).toFixed(3)}"
+      g += `<button class="${cls.join(' ')}" style="--f:${(f * 0.24).toFixed(3)}"
               data-act="peek" data-d="${d}" data-h="${hr}"
               aria-label="${DAYSL[d]} ${hr}:00–${hr+1}:00, ${n} ${n === 1 ? 'persona libera' : 'persone libere'}">${n || ''}</button>`;
     });
@@ -671,18 +716,18 @@ function summaryHtml(c) {
   }
 
   return `${matchesHtml(c)}
-    <div class="sechead" style="padding-top:6px"><h2>Chi c'è, ora per ora</h2></div>
+    <div class="sechead" style="padding-top:8px"><h2>Chi c'è, ora per ora</h2></div>
     <div class="toolbar">
       <span class="pick">
         <label for="minSel">Mostra le ore con</label>
         <select id="minSel" data-act="min">${opts.join('')}</select>
       </span>
       <span class="spacer"></span>
-      <span class="pick">massimo insieme: <b style="color:var(--fg)">${best}</b> su ${maxN}</span>
+      <span class="pick">massimo insieme: <b>${best}</b> su ${maxN}</span>
     </div>
     <div class="card gridbox">
       ${g}
-      <p class="legend">Il numero dice quante persone sono libere in quella fascia. <b>Verde pieno</b> = ci sono almeno quelle che hai chiesto qui sopra. Tocca una casella per vedere chi.</p>
+      <p class="legend">Il numero dice quante persone sono libere in quella fascia. <b>Terra rossa piena</b> = ci sono almeno quelle che hai chiesto qui sopra. Tocca una casella per vedere chi.</p>
     </div>
     ${who}`;
 }
@@ -694,8 +739,9 @@ function wireSummary() {
 /* ========================================================================
    Righe, icone e azioni comuni
    ======================================================================== */
-const ICO_PEN   = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
-const ICO_TRASH = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>';
+const ICO_PEN    = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+const ICO_TRASH  = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>';
+const ICO_ERASER = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 20.5 3.9 15.9a2 2 0 0 1 0-2.8l8.8-8.8a2 2 0 0 1 2.8 0l4.6 4.6a2 2 0 0 1 0 2.8l-8.8 8.8Z"/><path d="M8.5 20.5H20"/><path d="m9.5 8.5 6 6"/></svg>';
 function iconBtn(act, id, label, ico, extra) {
   return `<button class="iconbtn ${extra || ''}" data-act="${act}" data-id="${id}" title="${label}" aria-label="${label}">${ico}</button>`;
 }
@@ -762,8 +808,7 @@ document.getElementById('main').addEventListener('click', e => {
   } else if (act === 'del-club') {
     const c = data.clubs.find(x => x.id === id); if (!c) return;
     const n = c.people.length;
-    const msg = n ? 'Eliminare "' + c.name + '" e le disponibilità delle sue ' + n + ' persone?' : 'Eliminare "' + c.name + '"?';
-    if (!confirm(msg)) return;
+    if (!confirm(n ? 'Eliminare "' + c.name + '" e le disponibilità delle sue ' + n + ' persone?' : 'Eliminare "' + c.name + '"?')) return;
     data.clubs = data.clubs.filter(x => x.id !== id);
     save(); render();
   } else if (act === 'del-person') {
@@ -771,6 +816,23 @@ document.getElementById('main').addEventListener('click', e => {
     const p = c.people.find(x => x.id === id); if (!p) return;
     if (!confirm('Eliminare "' + p.name + '" e le sue disponibilità?')) return;
     c.people = c.people.filter(x => x.id !== id);
+    save(); render();
+  } else if (act === 'clear-person') {
+    // cancella solo le ore: la persona e il suo livello restano
+    const c = club(); if (!c) return;
+    const p = c.people.find(x => x.id === id); if (!p) return;
+    const n = countSlots(p);
+    if (!n) return;
+    if (!confirm('Cancellare le ' + n + (n === 1 ? ' ora' : ' ore') + ' di ' + p.name + '? Nome e livello restano.')) return;
+    p.slots = {};
+    save(); render();
+  } else if (act === 'clear-club') {
+    // il giro di pulizia di inizio settimana
+    const c = club(); if (!c) return;
+    const quanti = c.people.filter(p => countSlots(p) > 0).length;
+    if (!quanti) return;
+    if (!confirm('Cancellare le ore di ' + (quanti === 1 ? 'una persona' : 'tutte e ' + quanti + ' le persone') + ' di ' + c.name + '?\n\nNomi e livelli restano: si riparte con la settimana pulita.')) return;
+    c.people.forEach(p => { p.slots = {}; });
     save(); render();
   } else if (act === 'all' || act === 'none') {
     const p = person(); if (!p) return;
