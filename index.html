@@ -85,12 +85,24 @@
   .stack > * + * { margin-top: 14px; }
 
   /* ---------- riga per aggiungere ---------- */
-  .addrow { display: flex; gap: 8px; }
+  /* va a capo da sola: sul telefono il nome prende tutta la riga e livello +
+     tasto scendono sotto, sul computer sta tutto in fila */
+  .addrow { display: flex; flex-wrap: wrap; gap: 8px; }
   .addrow input {
-    flex: 1; min-width: 0; height: 46px; padding: 0 14px;
+    flex: 1 1 210px; min-width: 0; height: 46px; padding: 0 14px;
     background: var(--card); border: 1px solid var(--line-strong);
     border-radius: 12px; outline: none;
   }
+  .addrow select {
+    flex: 0 0 auto; height: 46px; padding: 0 32px 0 12px; border-radius: 12px;
+    background: var(--card); border: 1px solid var(--line-strong); outline: none;
+    -webkit-appearance: none; appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position: right 15px center, right 10px center;
+    background-size: 5px 5px, 5px 5px; background-repeat: no-repeat;
+  }
+  .addrow .btn { flex: 1 1 auto; }
+  @media (min-width: 560px) { .addrow .btn { flex: 0 0 auto; } }
   .addrow input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
   .btn {
     height: 46px; padding: 0 18px; border-radius: 12px; flex: 0 0 auto;
@@ -200,6 +212,30 @@
   }
   .chip.off { background: transparent; color: var(--muted); border-color: var(--line); }
 
+  /* pastiglia del livello, stessi colori del sito del circolo */
+  .lv {
+    display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+    min-width: 26px; height: 22px; padding: 0 6px; border-radius: 7px;
+    font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: .01em;
+  }
+  .lv.none { background: transparent; color: var(--muted); border: 1px dashed var(--line-strong); }
+
+  /* ---------- partite possibili ---------- */
+  .match { padding: 12px 14px; }
+  .match + .match { border-top: 1px solid var(--line); }
+  .mt-top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+  .pl { display: inline-flex; align-items: center; gap: 7px; font-weight: 650; min-width: 0; }
+  .pl span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .vs { font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .mt-slots { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .slot {
+    font-size: 12.5px; font-weight: 650; padding: 4px 9px; border-radius: 8px;
+    background: var(--accent-soft); color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+    font-variant-numeric: tabular-nums;
+  }
+  .mt-n { margin-left: auto; font-size: 12px; color: var(--muted); white-space: nowrap; }
+
   .sechead { display: flex; align-items: baseline; gap: 10px; padding: 0 4px 8px; }
   .sechead h2 { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
   .sechead .n { font-size: 13px; color: var(--muted); margin-left: auto; }
@@ -247,7 +283,7 @@ const HOURS = [9,10,11,12,13,14,15,16,17,18,19,20,21];
 const TOT_SLOT = DAYS.length * HOURS.length;
 
 let data = { clubs: [] };
-let view = { screen: 'clubs', clubId: null, personId: null, tab: 'persone', sel: null, min: 2, renaming: null };
+let view = { screen: 'clubs', clubId: null, personId: null, tab: 'persone', sel: null, min: 2, renaming: null, allMatches: false };
 
 function load() {
   try {
@@ -261,6 +297,31 @@ function save() {
 function uid() { return Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-3); }
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+/* Livelli 1-5, stessa scala e stessi colori del sito del circolo.
+   Regola del campo: ci si sfida solo fra livelli che distano al massimo 1
+   (un 3 gioca con 2, 3 e 4; mai con 1 o 5). */
+const LEVELS = [1,2,3,4,5];
+const LV_COLOR = { 1:'#86EFAC', 2:'#16A34A', 3:'#EAB308', 4:'#F97316', 5:'#EF4444' };
+const MAX_GAP = 1;
+const canPlay = (a, b) => !!a.lv && !!b.lv && Math.abs(a.lv - b.lv) <= MAX_GAP;
+
+/* nero o bianco, quello che si legge meglio sul colore del livello (formula WCAG):
+   serve perché le pastiglie restino leggibili sia in tema chiaro che scuro */
+function inkFor(hex) {
+  const h = hex.replace('#','');
+  const lin = c => { c /= 255; return c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4); };
+  const L = 0.2126*lin(parseInt(h.slice(0,2),16)) + 0.7152*lin(parseInt(h.slice(2,4),16)) + 0.0722*lin(parseInt(h.slice(4,6),16));
+  return ((L + 0.05) / 0.05) >= (1.05 / (L + 0.05)) ? '#111' : '#fff';
+}
+function lvBadge(lv) {
+  if (!lv) return '<span class="lv none" title="Livello da impostare">—</span>';
+  const c = LV_COLOR[lv];
+  return `<span class="lv" style="background:${c};color:${inkFor(c)}" title="Livello ${lv}">${lv}</span>`;
+}
+function lvOptions(sel) {
+  return LEVELS.map(l => `<option value="${l}"${l === sel ? ' selected' : ''}>Livello ${l}</option>`).join('');
 }
 
 const club   = () => data.clubs.find(c => c.id === view.clubId) || null;
@@ -353,27 +414,29 @@ function renderClub(c) {
 
 function peopleHtml(c) {
   const rows = c.people.map(p => {
-    if (view.renaming === p.id) return renameRow(p.id, p.name, 'person');
+    if (view.renaming === p.id) return renameRow(p.id, p.name, 'person', p.lv);
     const n = countSlots(p);
     return `<li><div class="row">
       <button class="open" data-act="open-person" data-id="${p.id}">
+        ${lvBadge(p.lv)}
         <span class="grow">
           <span class="nm">${esc(p.name)}</span>
-          <span class="sub">${n === 0 ? 'da compilare' : n + (n === 1 ? ' ora libera' : ' ore libere')}</span>
+          <span class="sub">${!p.lv ? 'livello da impostare' : (n === 0 ? 'da compilare' : n + (n === 1 ? ' ora libera' : ' ore libere'))}</span>
         </span>
         <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
       </button>
-      ${iconBtn('rename-person', p.id, 'Rinomina', ICO_PEN)}
+      ${iconBtn('rename-person', p.id, 'Modifica', ICO_PEN)}
       ${iconBtn('del-person', p.id, 'Elimina', ICO_TRASH, 'del')}
     </div></li>`;
   }).join('');
 
   return `<form class="addrow" data-act="add-person">
       <input name="nome" placeholder="Nome della persona" maxlength="60" autocomplete="off" aria-label="Nome della persona">
+      <select name="lv" aria-label="Livello">${lvOptions(3)}</select>
       <button class="btn" type="submit">Aggiungi</button>
     </form>
     ${c.people.length ? `<div class="card"><ul class="list">${rows}</ul></div>`
-      : `<div class="card empty"><strong>Nessuna persona</strong>Aggiungi i nomi, poi tocca ognuno per segnare quando può giocare.</div>`}`;
+      : `<div class="card empty"><strong>Nessuna persona</strong>Aggiungi i nomi col loro livello, poi tocca ognuno per segnare quando può giocare.</div>`}`;
 }
 
 /* ========================================================================
@@ -492,6 +555,77 @@ function freeAt(c, d, hr) {
   const k = slotKey(d, hr);
   return c.people.filter(p => p.slots && p.slots[k]);
 }
+
+/* Tutte le sfide che stanno in piedi: due persone di livello compatibile
+   (differenza massima 1) che hanno almeno un'ora libera in comune.
+   In cima quelle con più orari, che sono le più facili da far succedere. */
+function findMatches(c) {
+  const ppl = c.people.filter(p => p.lv);
+  const out = [];
+  for (let i = 0; i < ppl.length; i++) {
+    for (let j = i + 1; j < ppl.length; j++) {
+      const a = ppl[i], b = ppl[j];
+      if (!canPlay(a, b)) continue;
+      const shared = [];
+      DAYS.forEach((x, d) => HOURS.forEach(hr => {
+        const k = slotKey(d, hr);
+        if (a.slots && a.slots[k] && b.slots && b.slots[k]) shared.push([d, hr]);
+      }));
+      if (shared.length) out.push({ a, b, shared });
+    }
+  }
+  out.sort((m, n) => n.shared.length - m.shared.length || m.a.name.localeCompare(n.a.name));
+  return out;
+}
+
+/* Le ore attaccate diventano una fascia sola: 18 e 19 di lunedì si leggono
+   "Lun 18–20", cioè dalle 18 alle 20, invece di due etichette separate. */
+function fmtShared(shared) {
+  const byDay = {};
+  shared.forEach(pair => { (byDay[pair[0]] = byDay[pair[0]] || []).push(pair[1]); });
+  const out = [];
+  Object.keys(byDay).map(Number).sort((a, b) => a - b).forEach(d => {
+    const hs = byDay[d].sort((a, b) => a - b);
+    let i = 0;
+    while (i < hs.length) {
+      let j = i;
+      while (j + 1 < hs.length && hs[j + 1] === hs[j] + 1) j++;
+      out.push(DAYS[d] + ' ' + hs[i] + '–' + (hs[j] + 1));
+      i = j + 1;
+    }
+  });
+  return out;
+}
+
+function matchesHtml(c) {
+  const withLv = c.people.filter(p => p.lv).length;
+  const senzaLv = c.people.length - withLv;
+  const nota = senzaLv
+    ? `<p class="hint" style="padding:6px 4px 0">${senzaLv === 1 ? 'Una persona non ha' : senzaLv + ' persone non hanno'} il livello: ${senzaLv === 1 ? 'impostalo' : 'impostali'} con la matita per ${senzaLv === 1 ? 'vederla' : 'vederle'} qui.</p>`
+    : '';
+
+  const ms = findMatches(c);
+  const shown = view.allMatches ? ms : ms.slice(0, 25);
+
+  const body = ms.length
+    ? `<div class="card">${shown.map(m => `<div class="match">
+          <div class="mt-top">
+            <span class="pl">${lvBadge(m.a.lv)}<span>${esc(m.a.name)}</span></span>
+            <span class="vs">contro</span>
+            <span class="pl">${lvBadge(m.b.lv)}<span>${esc(m.b.name)}</span></span>
+            <span class="mt-n">${m.shared.length} ${m.shared.length === 1 ? 'ora' : 'ore'}</span>
+          </div>
+          <div class="mt-slots">${fmtShared(m.shared).map(s => `<span class="slot">${s}</span>`).join('')}</div>
+        </div>`).join('')}
+        ${ms.length > shown.length ? `<div style="padding:12px 14px;border-top:1px solid var(--line)"><button class="btn ghost sm" data-act="more-matches" style="width:100%">Mostra tutte le ${ms.length} partite</button></div>` : ''}
+      </div>`
+    : `<div class="card empty"><strong>Nessuna partita possibile</strong>${
+        withLv < 2 ? 'Servono almeno due persone col livello impostato.'
+        : 'Nessuna coppia di livello vicino (massimo 1 di differenza) ha ore libere in comune.'}</div>`;
+
+  return `<div class="sechead"><h2>Partite possibili</h2><span class="n">${ms.length ? ms.length + (ms.length === 1 ? ' abbinamento' : ' abbinamenti') : ''}</span></div>
+    ${body}${nota}`;
+}
 function summaryHtml(c) {
   if (!c.people.length) {
     return `<div class="card empty"><strong>Ancora niente da incrociare</strong>Aggiungi le persone e segna le loro ore: qui vedrai quando si trovano tutte insieme.</div>`;
@@ -536,7 +670,9 @@ function summaryHtml(c) {
     </div>`;
   }
 
-  return `<div class="toolbar">
+  return `${matchesHtml(c)}
+    <div class="sechead" style="padding-top:6px"><h2>Chi c'è, ora per ora</h2></div>
+    <div class="toolbar">
       <span class="pick">
         <label for="minSel">Mostra le ore con</label>
         <select id="minSel" data-act="min">${opts.join('')}</select>
@@ -563,9 +699,10 @@ const ICO_TRASH = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" s
 function iconBtn(act, id, label, ico, extra) {
   return `<button class="iconbtn ${extra || ''}" data-act="${act}" data-id="${id}" title="${label}" aria-label="${label}">${ico}</button>`;
 }
-function renameRow(id, name, kind) {
+function renameRow(id, name, kind, lv) {
   return `<li><form class="renameform" data-act="save-rename" data-id="${id}" data-kind="${kind}">
       <input name="nome" value="${esc(name)}" maxlength="60" autocomplete="off" aria-label="Nuovo nome">
+      ${kind === 'person' ? `<select name="lv" aria-label="Livello">${lvOptions(lv || 3)}</select>` : ''}
       <button class="btn sm" type="submit">Salva</button>
       <button class="btn ghost sm" type="button" data-act="cancel-rename">Annulla</button>
     </form></li>`;
@@ -585,7 +722,8 @@ document.getElementById('main').addEventListener('submit', e => {
   } else if (act === 'add-person') {
     if (!val) return;
     const c = club(); if (!c) return;
-    c.people.push({ id: uid(), name: val, slots: {} });
+    const lv = form.elements.lv ? +form.elements.lv.value : 3;
+    c.people.push({ id: uid(), name: val, lv: lv, slots: {} });
     save(); render();
   } else if (act === 'save-rename') {
     if (val) {
@@ -593,7 +731,8 @@ document.getElementById('main').addEventListener('submit', e => {
       if (form.dataset.kind === 'club') {
         const c = data.clubs.find(x => x.id === id); if (c) c.name = val;
       } else {
-        const c = club(); const p = c && c.people.find(x => x.id === id); if (p) p.name = val;
+        const c = club(); const p = c && c.people.find(x => x.id === id);
+        if (p) { p.name = val; if (form.elements.lv) p.lv = +form.elements.lv.value; }
       }
       save();
     }
@@ -607,13 +746,13 @@ document.getElementById('main').addEventListener('click', e => {
   const act = btn.dataset.act, id = btn.dataset.id;
 
   if (act === 'open-club') {
-    view.clubId = id; view.screen = 'club'; view.tab = 'persone'; view.sel = null; view.min = 2;
+    view.clubId = id; view.screen = 'club'; view.tab = 'persone'; view.sel = null; view.min = 2; view.allMatches = false;
     render(); window.scrollTo(0, 0);
   } else if (act === 'open-person') {
     view.personId = id; view.screen = 'person';
     render(); window.scrollTo(0, 0);
   } else if (act === 'tab') {
-    view.tab = btn.dataset.tab; view.sel = null; render();
+    view.tab = btn.dataset.tab; view.sel = null; view.allMatches = false; render();
   } else if (act === 'rename-club' || act === 'rename-person') {
     view.renaming = id; render();
     const inp = document.querySelector('.renameform input');
@@ -640,6 +779,8 @@ document.getElementById('main').addEventListener('click', e => {
     p.slots = {};
     if (on) DAYS.forEach((x, d) => HOURS.forEach(hr => { p.slots[slotKey(d, hr)] = true; }));
     save(); render();
+  } else if (act === 'more-matches') {
+    view.allMatches = true; render();
   } else if (act === 'peek') {
     const k = slotKey(+btn.dataset.d, +btn.dataset.h);
     view.sel = (view.sel === k) ? null : k;
