@@ -11,15 +11,14 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@400;500;600;700;800&display=swap">
 <style>
   /* Stile campo da tennis: terra rossa, righe bianche, titoli condensati.
-     Un solo tema, dichiarato per intero: il fondo scuro è una scelta, non
-     l'impostazione del dispositivo. */
+     Un solo tema, dichiarato per intero. */
   :root {
     color-scheme: dark;
     --clay:        #C75B3C;
     --clay-2:      #E27B4E;
     --clay-deep:   #8E3A22;
     --clay-ink:    #FFF6F1;
-    --court:       #EFE7DE;   /* bianco delle righe */
+    --court:       #EFE7DE;
     --bg:          #14100E;
     --panel:       #1E1917;
     --panel-2:     #2A2320;
@@ -31,21 +30,21 @@
     --radius:      12px;
     --disp:        "Bebas Neue", "Oswald", "Arial Narrow", Impact, sans-serif;
     --text:        "Work Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --shadow-tabbar: 0 10px 40px rgba(0,0,0,.55);
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body {
     background: var(--bg); color: var(--fg);
     font-family: var(--text); font-size: 16px; line-height: 1.45;
-    -webkit-text-size-adjust: 100%; padding-bottom: 44px;
+    -webkit-text-size-adjust: 100%;
+    padding-bottom: 132px;   /* spazio per il menù in basso */
   }
   button, input, select { font: inherit; color: inherit; }
   button { cursor: pointer; border: none; background: none; }
   h1, h2, h3 { margin: 0; }
+  [hidden] { display: none !important; }
   .wrap { width: 100%; max-width: 800px; margin: 0 auto; padding: 0 14px; }
-
-  /* titoli e etichette: condensato maiuscolo, da tabellone */
-  .disp { font-family: var(--disp); text-transform: uppercase; letter-spacing: .04em; font-weight: 400; }
 
   /* ---------- testata: striscia di terra con le righe del campo ---------- */
   .top {
@@ -53,8 +52,6 @@
     background: linear-gradient(178deg, var(--clay) 0%, var(--clay-deep) 100%);
     border-bottom: 3px solid var(--court);
   }
-  /* Righe del campo: la riga di servizio poco sopra il fondo, e il segno di
-     metà campo che tocca la riga di fondo, come sul campo vero. */
   .top::after {
     content: ''; position: absolute; inset: 0; pointer-events: none;
     background:
@@ -87,36 +84,14 @@
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
 
-  main { padding-top: 18px; }
+  /* la testata non deve stare appiccicata al contenuto */
+  main { padding-top: 26px; }
   .stack > * + * { margin-top: 14px; }
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
 
-  /* intestazione di sezione, con la riga del campo sotto */
   .sechead { display: flex; align-items: center; gap: 10px; padding: 2px 3px 9px; }
   .sechead h2 { font-family: var(--disp); text-transform: uppercase; letter-spacing: .1em; font-size: 15px; color: var(--court); font-weight: 400; }
   .sechead .n { margin-left: auto; font-size: 12px; color: var(--muted); }
-  .sechead::after { content: none; }
-
-  /* ---------- riga per aggiungere ---------- */
-  .addrow { display: flex; flex-wrap: wrap; gap: 8px; }
-  .addrow input {
-    flex: 1 1 210px; min-width: 0; height: 48px; padding: 0 14px;
-    background: var(--panel); border: 1px solid var(--line-strong);
-    border-radius: 10px; outline: none; color: var(--fg);
-  }
-  .addrow input::placeholder { color: var(--muted); }
-  .addrow input:focus { border-color: var(--clay-2); box-shadow: 0 0 0 3px rgba(226,123,78,.18); }
-  .addrow select {
-    flex: 0 0 auto; height: 48px; padding: 0 32px 0 13px; border-radius: 10px;
-    background: var(--panel); border: 1px solid var(--line-strong); outline: none; color: var(--fg);
-    font-family: var(--disp); text-transform: uppercase; letter-spacing: .06em; font-size: 15px;
-    -webkit-appearance: none; appearance: none;
-    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
-    background-position: right 15px center, right 10px center;
-    background-size: 5px 5px, 5px 5px; background-repeat: no-repeat;
-  }
-  .addrow .btn { flex: 1 1 auto; }
-  @media (min-width: 560px) { .addrow .btn { flex: 0 0 auto; } }
 
   .btn {
     height: 48px; padding: 0 20px; border-radius: 10px; flex: 0 0 auto;
@@ -156,37 +131,11 @@
   .iconbtn:hover { background: var(--panel-2); color: var(--fg); }
   .iconbtn.del:hover { background: rgba(255,122,107,.14); color: var(--danger); }
   .iconbtn.eraser:hover { background: rgba(226,123,78,.16); color: var(--clay-2); }
-  .renameform { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; padding: 6px; }
-  .renameform input {
-    flex: 1 1 130px; min-width: 0; height: 40px; padding: 0 10px; color: var(--fg);
-    background: var(--bg); border: 1px solid var(--clay); border-radius: 8px; outline: none;
-  }
-  .renameform select {
-    flex: 0 0 auto; height: 40px; padding: 0 28px 0 10px; border-radius: 8px; color: var(--fg);
-    background: var(--bg); border: 1px solid var(--line-strong); outline: none;
-    font-family: var(--disp); text-transform: uppercase; letter-spacing: .06em; font-size: 14px;
-    -webkit-appearance: none; appearance: none;
-    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
-    background-position: right 13px center, right 8px center;
-    background-size: 5px 5px, 5px 5px; background-repeat: no-repeat;
-  }
 
   .empty { padding: 30px 20px; text-align: center; color: var(--muted); font-size: 13.5px; line-height: 1.6; }
   .empty strong {
     display: block; color: var(--court); margin-bottom: 5px;
     font-family: var(--disp); text-transform: uppercase; letter-spacing: .08em; font-size: 17px; font-weight: 400;
-  }
-
-  /* ---------- schede ---------- */
-  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--line); }
-  .tabs button {
-    flex: 1; height: 46px; color: var(--muted); position: relative;
-    font-family: var(--disp); text-transform: uppercase; letter-spacing: .1em; font-size: 17px;
-  }
-  .tabs button[aria-selected="true"] { color: var(--court); }
-  /* la riga del campo che segue la scheda scelta */
-  .tabs button[aria-selected="true"]::after {
-    content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 3px; background: var(--clay-2);
   }
 
   /* ---------- griglia oraria: il campo ---------- */
@@ -203,7 +152,6 @@
     border: 1px solid var(--line-strong); background: var(--bg);
     transition: background .1s, border-color .1s;
   }
-  /* casella accesa: la terra rossa del campo */
   .cell[aria-pressed="true"] {
     background: linear-gradient(180deg, var(--clay-2), var(--clay));
     border-color: var(--clay-2);
@@ -213,7 +161,6 @@
   .legend { margin-top: 11px; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
   .legend b { color: var(--court); font-weight: 600; }
 
-  /* celle del riepilogo */
   .cell.count {
     display: flex; align-items: center; justify-content: center;
     font-family: var(--disp); font-size: 16px; letter-spacing: .02em; color: var(--muted);
@@ -231,7 +178,7 @@
   .toolbar .spacer { flex: 1; }
   .pick { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
   .pick b { color: var(--court); font-weight: 700; }
-  .pick select {
+  .pick select, .fld select {
     height: 40px; padding: 0 30px 0 11px; border-radius: 9px; color: var(--fg);
     background: var(--panel); border: 1px solid var(--line-strong); outline: none;
     font-family: var(--disp); text-transform: uppercase; letter-spacing: .05em; font-size: 15px;
@@ -253,7 +200,6 @@
   }
   .chip.off { background: transparent; color: var(--muted); border-color: var(--line); }
 
-  /* pastiglia livello: tacca squadrata, colori del sito del circolo */
   .lv {
     display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
     min-width: 26px; height: 26px; padding: 0 6px; border-radius: 6px;
@@ -268,12 +214,7 @@
   .mt-top { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 9px; }
   .pl { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; min-width: 0; }
   .pl span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .vs {
-    font-family: var(--disp); text-transform: uppercase; letter-spacing: .12em;
-    font-size: 13px; color: var(--clay-2);
-  }
-  /* il conteggio chiude la riga degli orari: messo in alto restava spesso da
-     solo su una riga tutta sua */
+  .vs { font-family: var(--disp); text-transform: uppercase; letter-spacing: .12em; font-size: 13px; color: var(--clay-2); }
   .mt-n {
     margin-left: auto; align-self: center;
     font-family: var(--disp); text-transform: uppercase; letter-spacing: .07em;
@@ -283,22 +224,126 @@
   .slot {
     font-family: var(--disp); font-size: 15px; letter-spacing: .04em;
     padding: 3px 10px; border-radius: 7px;
-    background: rgba(199,91,60,.16); color: var(--clay-2);
-    border: 1px solid rgba(199,91,60,.42);
+    background: rgba(199,91,60,.16); color: var(--clay-2); border: 1px solid rgba(199,91,60,.42);
   }
-
   .hint { font-size: 12.5px; color: var(--muted); padding: 0 4px; line-height: 1.55; }
-  [hidden] { display: none !important; }
+
+  /* ---------- campi dei moduli ---------- */
+  .fld { margin-bottom: 15px; }
+  .fld > label {
+    display: block; margin-bottom: 7px;
+    font-family: var(--disp); text-transform: uppercase; letter-spacing: .1em;
+    font-size: 13px; color: var(--muted);
+  }
+  .fld input[type="text"] {
+    width: 100%; height: 48px; padding: 0 14px; color: var(--fg);
+    background: var(--bg); border: 1px solid var(--line-strong); border-radius: 10px; outline: none;
+  }
+  .fld input[type="text"]::placeholder { color: var(--muted); }
+  .fld input[type="text"]:focus { border-color: var(--clay-2); box-shadow: 0 0 0 3px rgba(226,123,78,.18); }
+  .pickrow { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pickchip {
+    height: 38px; padding: 0 13px; border-radius: 9px;
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 13px; font-weight: 600; font-family: var(--text);
+    background: transparent; color: var(--muted); border: 1px solid var(--line-strong);
+  }
+  .pickchip.on { background: rgba(199,91,60,.18); color: var(--clay-2); border-color: var(--clay); }
+  .pickchip .tick { opacity: 0; }
+  .pickchip.on .tick { opacity: 1; }
+
+  /* ---------- menù in basso (come itstracker) ---------- */
+  .tabbar-wrap {
+    position: fixed; bottom: 30px; left: 14px; right: 14px; z-index: 50;
+    max-width: 452px; margin: 0 auto;
+    display: flex; gap: 10px; align-items: stretch;
+  }
+  .tabbar {
+    display: flex; padding: 0; position: relative;
+    background: rgba(255,255,255,.07);
+    -webkit-backdrop-filter: blur(38px) saturate(220%); backdrop-filter: blur(38px) saturate(220%);
+    border: 0.5px solid rgba(255,255,255,.2); border-radius: 30px;
+    box-shadow: var(--shadow-tabbar), inset 0 1px 0 rgba(255,255,255,.14), inset 0 -1px 0 rgba(0,0,0,.25);
+    overflow: hidden;
+  }
+  .pill-main { flex: 1; }
+  .pill-side { flex: 0 0 auto; }
+  .tabbar::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: linear-gradient(180deg, rgba(255,255,255,.15) 0%, rgba(255,255,255,.03) 22%, rgba(255,255,255,0) 45%);
+  }
+  .tabbtn {
+    position: relative; z-index: 1; flex: 1; min-width: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    background: none; border: none; color: rgba(255,255,255,.45); font-family: inherit;
+    padding: 11px 2px 10px; border-radius: 26px; transition: color .2s;
+  }
+  .pill-side .tabbtn { flex: 0 0 auto; padding: 11px 20px; }
+  .tabbtn.active { color: var(--clay-2); }
+  .tabbtn.active::before {
+    content: ''; position: absolute; inset: 0; z-index: -1;
+    border-radius: 30px; background: rgba(255,255,255,.13);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 2px rgba(0,0,0,.18);
+  }
+  .tabbtn svg { width: 23px; height: 23px; flex: 0 0 auto; transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
+  .tabbtn .lb {
+    font-family: var(--disp); text-transform: uppercase; letter-spacing: .04em;
+    font-size: clamp(9.5px, 2.7vw, 11.5px); line-height: 1;
+    max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .tabbtn.bounce svg { animation: tabBounce .4s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes tabBounce {
+    0% { transform: scale(1); } 35% { transform: scale(1.28); }
+    65% { transform: scale(.92); } 100% { transform: scale(1); }
+  }
+  .tab-add { color: var(--clay-2); }
+
+  /* ---------- finestra del + ---------- */
+  .modalbg {
+    position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,.66);
+    display: flex; align-items: flex-end; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .22s;
+  }
+  .modalbg.open { opacity: 1; pointer-events: auto; }
+  .modal {
+    width: 100%; max-width: 480px; max-height: 88vh; overflow-y: auto;
+    background: var(--panel); border: 1px solid var(--line-strong);
+    border-radius: 18px 18px 0 0; padding: 18px 16px calc(env(safe-area-inset-bottom) + 22px);
+    transform: translateY(14px); transition: transform .26s cubic-bezier(.32,.72,0,1);
+  }
+  .modalbg.open .modal { transform: translateY(0); }
+  @media (min-width: 560px) {
+    .modalbg { align-items: center; }
+    .modal { border-radius: 18px; padding-bottom: 22px; }
+  }
+  .modal h3 {
+    font-family: var(--disp); text-transform: uppercase; letter-spacing: .08em;
+    font-size: 21px; color: var(--court); font-weight: 400; margin-bottom: 14px;
+  }
+  .bigchoice {
+    width: 100%; display: flex; align-items: center; gap: 13px; text-align: left;
+    padding: 15px 14px; border-radius: 12px; margin-bottom: 9px;
+    background: var(--bg); border: 1px solid var(--line-strong); color: var(--fg);
+  }
+  .bigchoice:hover { border-color: var(--clay); background: var(--panel-2); }
+  .bigchoice .ic {
+    width: 40px; height: 40px; flex: 0 0 auto; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(199,91,60,.18); color: var(--clay-2);
+  }
+  /* titolo sopra, spiegazione sotto: da inline finirebbero sulla stessa riga */
+  .bigchoice .tx { min-width: 0; flex: 1; }
+  .bigchoice .t1 { display: block; font-family: var(--disp); text-transform: uppercase; letter-spacing: .06em; font-size: 17px; line-height: 1.15; }
+  .bigchoice .t2 { display: block; font-size: 12.5px; color: var(--muted); line-height: 1.4; margin-top: 2px; }
 
   /* ---------- account e sincronizzazione ---------- */
   .acct {
     width: 38px; height: 38px; flex: 0 0 auto; border-radius: 50%; position: relative;
     border: 2px solid rgba(255,255,255,.55); background: rgba(0,0,0,.18);
-    display: flex; align-items: center; justify-content: center; color: #fff; overflow: visible;
+    display: flex; align-items: center; justify-content: center; color: #fff;
   }
   .acct:active { transform: scale(.93); }
   .acct img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-  /* pallino di stato: grigio scollegato, verde a posto, giallo sta salvando, rosso errore */
   .acct .dot {
     position: absolute; right: -2px; bottom: -2px; width: 12px; height: 12px; border-radius: 50%;
     border: 2px solid var(--clay-deep); background: #8C8078;
@@ -306,7 +351,6 @@
   .acct .dot.on   { background: #5FD16A; }
   .acct .dot.busy { background: #FFD166; }
   .acct .dot.err  { background: var(--danger); }
-
   .acctpanel {
     position: fixed; z-index: 60; right: 12px; top: calc(env(safe-area-inset-top) + 66px);
     width: min(290px, calc(100vw - 24px));
@@ -320,14 +364,14 @@
   .acctpanel .mail { font-size: 12.5px; color: var(--muted); word-break: break-all; margin-bottom: 4px; }
   .acctpanel .st { font-size: 12.5px; color: var(--muted); margin-bottom: 12px; }
   .acctpanel .btn { width: 100%; }
-  .acctpanel .btn + .btn { margin-top: 8px; }
+
   @media (min-width: 640px) {
     .grid { grid-template-columns: 44px repeat(7, minmax(0, 1fr)); gap: 5px; }
     .cell { height: 40px; }
     .gh { font-size: 14px; }
     .titles h1 { font-size: 34px; }
   }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 </head>
 <body>
@@ -341,7 +385,6 @@
       <div class="crumb" id="crumb"></div>
       <h1 id="title">Disponibilità</h1>
     </div>
-    <!-- compare solo se Firebase riesce a caricarsi: senza rete l'app resta com'è -->
     <button class="acct" id="acct" hidden aria-label="Account e sincronizzazione">
       <span id="acctIco">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
@@ -354,64 +397,120 @@
 
 <main class="wrap" id="main"></main>
 
+<div class="tabbar-wrap">
+  <div class="tabbar pill-main">
+    <button class="tabbtn active" data-tab="circoli" aria-label="Circoli">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4.5" width="18" height="15" rx="2"/><path d="M3 12h18M12 4.5v15"/>
+      </svg>
+      <span class="lb">Circoli</span>
+    </button>
+    <button class="tabbtn" data-tab="persone" aria-label="Persone">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="9" cy="8" r="3.3"/><path d="M2.8 19a6.2 6.2 0 0 1 12.4 0"/>
+        <path d="M16.2 5.2a3.3 3.3 0 0 1 0 5.6M17.5 13.4A6.2 6.2 0 0 1 21.2 19"/>
+      </svg>
+      <span class="lb">Persone</span>
+    </button>
+    <button class="tabbtn" data-tab="disponibilita" aria-label="Disponibilità">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4.5" width="18" height="16" rx="2.2"/><path d="M3 9.5h18M8 2.8v3.4M16 2.8v3.4"/>
+        <path d="M7 13h3M7 16.7h3M14 13h3"/>
+      </svg>
+      <span class="lb">Disponibilità</span>
+    </button>
+  </div>
+  <div class="tabbar pill-side">
+    <button class="tabbtn tab-add" id="btnAdd" aria-label="Aggiungi">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="modalbg" id="modalBg"><div class="modal" id="modal"></div></div>
+
 <script>
 'use strict';
 
 /* ========================================================================
-   Dati — tutto in questo dispositivo, nessun account e nessun server
+   Dati
+   Le persone stanno in un elenco a parte, non dentro i circoli: la stessa
+   persona può essere iscritta a più circoli, e le sue ore libere sono le
+   stesse ovunque giochi.
    ======================================================================== */
 const KEY = 'disponibilita_tennis_v1';
 
 const DAYS  = ['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
 const DAYSL = ['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'];
-// una fascia per ogni ora: 9-10, 10-11, ... 21-22 (la giornata finisce alle 22)
 const HOURS = [9,10,11,12,13,14,15,16,17,18,19,20,21];
 const TOT_SLOT = DAYS.length * HOURS.length;
 
-let data = { clubs: [] };
-let view = { screen: 'clubs', clubId: null, personId: null, tab: 'persone', sel: null, min: 2, renaming: null, allMatches: false };
+let data = { clubs: [], people: [] };
+let view = { tab: 'circoli', screen: null, clubId: null, personId: null, sel: null, min: 2, allMatches: false };
+
+function uid() { return Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-3); }
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+/* Rimette in forma qualunque cosa arrivi: dati vecchi (persone dentro i
+   circoli), dati nuovi, o roba storta. Serve sia al caricamento locale sia a
+   quello che scende dal cloud, che può venire da una versione precedente. */
+function migra(o) {
+  if (!o || typeof o !== 'object') return { clubs: [], people: [], aggiornato: 0 };
+  const rawClubs = Array.isArray(o.clubs) ? o.clubs : [];
+  let people = Array.isArray(o.people) ? o.people : null;
+  if (!people) {
+    people = [];
+    rawClubs.forEach(c => {
+      (Array.isArray(c.people) ? c.people : []).forEach(p => {
+        people.push({ id: p.id || uid(), name: p.name || '', lv: p.lv || null, clubIds: [c.id], slots: p.slots || {} });
+      });
+    });
+  }
+  const clubs = rawClubs.map(c => ({ id: c.id || uid(), name: c.name || '' }));
+  const validi = {};
+  clubs.forEach(c => { validi[c.id] = true; });
+  return {
+    clubs,
+    people: people.map(p => ({
+      id: p.id || uid(),
+      name: p.name || '',
+      lv: p.lv || null,
+      // via i circoli che non esistono più, altrimenti restano appartenenze fantasma
+      clubIds: (Array.isArray(p.clubIds) ? p.clubIds : []).filter(id => validi[id]),
+      slots: (p.slots && typeof p.slots === 'object') ? p.slots : {}
+    })),
+    aggiornato: o.aggiornato || 0
+  };
+}
 
 function load() {
-  try {
-    const raw = JSON.parse(localStorage.getItem(KEY) || 'null');
-    if (raw && Array.isArray(raw.clubs)) data = raw;
-  } catch (e) { /* dati illeggibili: si riparte da zero */ }
+  try { data = migra(JSON.parse(localStorage.getItem(KEY) || 'null')); }
+  catch (e) { data = { clubs: [], people: [], aggiornato: 0 }; }
 }
-/* Ogni salvataggio porta con sé il momento in cui è avvenuto: serve a decidere,
-   quando due dispositivi hanno versioni diverse, quale delle due è la più fresca. */
 function save() {
   data.aggiornato = Date.now();
   try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {}
   if (window.syncPush) { try { window.syncPush(data); } catch (e) {} }
 }
 
-/* Ganci usati dal modulo Firebase, che vive in uno script a parte: se quello
-   non si carica (offline, CDN bloccata) qui non cambia niente e l'app funziona
-   lo stesso, solo senza sincronizzazione. */
+/* Ganci per il modulo Firebase, che vive in uno script a parte: se non si
+   carica (offline, CDN bloccata) l'app funziona lo stesso, solo senza cloud. */
 window.syncGetData = function () { return data; };
-window.syncHasData = function () { return data.clubs.length > 0; };
+window.syncHasData = function () { return data.clubs.length > 0 || data.people.length > 0; };
 window.syncAdopt = function (remote) {
-  data = (remote && Array.isArray(remote.clubs)) ? remote : { clubs: [] };
+  data = migra(remote);
   try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {}
-  // se stavamo guardando un circolo o una persona che nella nuova versione non
-  // esiste più, render() se ne accorge e torna indietro da solo
-  view.renaming = null;
   render();
 };
-function uid() { return Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-3); }
-function esc(s) {
-  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-}
 
-/* Livelli 1-5, stessa scala e stessi colori del sito del circolo.
-   Regola del campo: ci si sfida solo fra livelli che distano al massimo 1
-   (un 3 gioca con 2, 3 e 4; mai con 1 o 5). */
+/* ---------- livelli ---------- */
 const LEVELS = [1,2,3,4,5];
 const LV_COLOR = { 1:'#86EFAC', 2:'#16A34A', 3:'#EAB308', 4:'#F97316', 5:'#EF4444' };
 const MAX_GAP = 1;
 const canPlay = (a, b) => !!a.lv && !!b.lv && Math.abs(a.lv - b.lv) <= MAX_GAP;
 
-/* nero o bianco, quello che si legge meglio sul colore del livello (formula WCAG) */
 function inkFor(hex) {
   const h = hex.replace('#','');
   const lin = c => { c /= 255; return c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4); };
@@ -427,57 +526,82 @@ function lvOptions(sel) {
   return LEVELS.map(l => `<option value="${l}"${l === sel ? ' selected' : ''}>Livello ${l}</option>`).join('');
 }
 
-const club   = () => data.clubs.find(c => c.id === view.clubId) || null;
-const person = () => { const c = club(); return c ? (c.people.find(p => p.id === view.personId) || null) : null; };
-const slotKey = (d, h) => d + '-' + h;
+/* ---------- scorciatoie ---------- */
+const clubById   = id => data.clubs.find(c => c.id === id) || null;
+const personById = id => data.people.find(p => p.id === id) || null;
+const club       = () => clubById(view.clubId);
+const person     = () => personById(view.personId);
+const slotKey    = (d, h) => d + '-' + h;
 const countSlots = p => Object.keys(p.slots || {}).length;
-const clubHasSlots = c => c.people.some(p => countSlots(p) > 0);
+const membri     = clubId => data.people.filter(p => (p.clubIds || []).indexOf(clubId) >= 0);
+const nomiCircoli = p => (p.clubIds || []).map(id => (clubById(id) || {}).name).filter(Boolean);
 
 /* ========================================================================
-   Testata e navigazione
+   Navigazione
    ======================================================================== */
+const TITOLI = { circoli: 'Circoli', persone: 'Persone', disponibilita: 'Disponibilità' };
+
 function render() {
-  const back  = document.getElementById('back');
+  const back = document.getElementById('back');
   const crumb = document.getElementById('crumb');
   const title = document.getElementById('title');
-  const c = club(), p = person();
+  const main = document.getElementById('main');
 
-  if (view.screen === 'clubs') {
-    back.classList.remove('show');
-    crumb.textContent = 'I tuoi circoli';
-    title.textContent = 'Disponibilità';
-    renderClubs();
-  } else if (view.screen === 'club' && c) {
-    back.classList.add('show');
+  // se quello che stavamo guardando è sparito (cancellato, o arrivato dal
+  // cloud senza), si torna all'elenco invece di mostrare una pagina vuota
+  if (view.screen === 'club' && !club()) view.screen = null;
+  if ((view.screen === 'persona' || view.screen === 'griglia') && !person()) view.screen = null;
+
+  document.querySelectorAll('.tabbtn[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === view.tab));
+  back.classList.toggle('show', !!view.screen);
+
+  if (!view.screen) {
+    crumb.textContent = 'Disponibilità tennis';
+    title.textContent = TITOLI[view.tab];
+    if (view.tab === 'circoli') main.innerHTML = htmlCircoli();
+    else if (view.tab === 'persone') main.innerHTML = htmlPersone();
+    else main.innerHTML = htmlDisponibilita();
+  } else if (view.screen === 'club') {
     crumb.textContent = 'Circolo';
-    title.textContent = c.name;
-    renderClub(c);
-  } else if (view.screen === 'person' && c && p) {
-    back.classList.add('show');
-    crumb.textContent = c.name;
-    title.textContent = p.name;
-    renderPerson(c, p);
-  } else {
-    view.screen = 'clubs'; view.clubId = null; view.personId = null;
-    render();
+    title.textContent = club().name;
+    main.innerHTML = htmlClub(club());
+    wireSummary();
+  } else if (view.screen === 'persona') {
+    crumb.textContent = 'Persona';
+    title.textContent = person().name;
+    main.innerHTML = htmlPersona(person());
+  } else if (view.screen === 'griglia') {
+    crumb.textContent = person().name;
+    title.textContent = 'Le sue ore';
+    main.innerHTML = htmlGriglia(person());
+    wireGrid();
   }
 }
 function goBack() {
-  if (view.screen === 'person') { view.screen = 'club'; view.personId = null; }
-  else if (view.screen === 'club') { view.screen = 'clubs'; view.clubId = null; view.sel = null; }
-  view.renaming = null;
-  render();
-  window.scrollTo(0, 0);
+  if (view.screen === 'griglia') { view.screen = null; view.tab = 'disponibilita'; }
+  else { view.screen = null; }
+  view.sel = null;
+  render(); window.scrollTo(0, 0);
 }
 document.getElementById('back').addEventListener('click', goBack);
 
+document.querySelectorAll('.tabbtn[data-tab]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    view.tab = btn.dataset.tab; view.screen = null; view.sel = null; view.allMatches = false;
+    render(); window.scrollTo(0, 0);
+    btn.classList.remove('bounce'); void btn.offsetWidth; btn.classList.add('bounce');
+  });
+});
+
 /* ========================================================================
-   Schermata 1 — circoli
+   Scheda CIRCOLI
    ======================================================================== */
-function renderClubs() {
+function htmlCircoli() {
+  if (!data.clubs.length) {
+    return `<div class="card empty"><strong>Nessun circolo</strong>Tocca <b>+</b> qui sotto e aggiungi il primo circolo.</div>`;
+  }
   const rows = data.clubs.map(c => {
-    const n = c.people.length;
-    if (view.renaming === c.id) return renameRow(c.id, c.name, 'club');
+    const n = membri(c.id).length;
     return `<li><div class="row">
       <button class="open" data-act="open-club" data-id="${c.id}">
         <span class="grow">
@@ -486,108 +610,130 @@ function renderClubs() {
         </span>
         <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
       </button>
-      ${iconBtn('rename-club', c.id, 'Rinomina', ICO_PEN)}
+      ${iconBtn('edit-club', c.id, 'Rinomina', ICO_PEN)}
       ${iconBtn('del-club', c.id, 'Elimina', ICO_TRASH, 'del')}
     </div></li>`;
   }).join('');
-
-  document.getElementById('main').innerHTML = `
-    <div class="stack">
-      <form class="addrow" data-act="add-club">
-        <input name="nome" placeholder="Nome del circolo" maxlength="60" autocomplete="off" aria-label="Nome del circolo">
-        <button class="btn" type="submit">Aggiungi</button>
-      </form>
-      ${data.clubs.length ? `<div class="card"><ul class="list">${rows}</ul></div>`
-        : `<div class="card empty"><strong>Nessun circolo</strong>Scrivi qui sopra il nome del primo circolo.</div>`}
-    </div>`;
+  return `<div class="stack"><div class="card"><ul class="list">${rows}</ul></div></div>`;
 }
 
 /* ========================================================================
-   Schermata 2 — circolo: persone oppure riepilogo
+   Scheda PERSONE — tutte, con i circoli a cui appartengono
    ======================================================================== */
-function renderClub(c) {
-  const tabs = `<div class="tabs" role="tablist">
-      <button role="tab" aria-selected="${view.tab === 'persone'}" data-act="tab" data-tab="persone">Persone</button>
-      <button role="tab" aria-selected="${view.tab === 'riepilogo'}" data-act="tab" data-tab="riepilogo">Riepilogo</button>
-    </div>`;
-  document.getElementById('main').innerHTML =
-    `<div class="stack">${tabs}${view.tab === 'persone' ? peopleHtml(c) : summaryHtml(c)}</div>`;
-  if (view.tab === 'riepilogo') wireSummary();
-}
-
-function peopleHtml(c) {
-  const rows = c.people.map(p => {
-    if (view.renaming === p.id) return renameRow(p.id, p.name, 'person', p.lv);
-    const n = countSlots(p);
+function htmlPersone() {
+  if (!data.people.length) {
+    return `<div class="card empty"><strong>Nessuna persona</strong>Tocca <b>+</b> qui sotto per aggiungere una persona e metterla in uno o più circoli.</div>`;
+  }
+  const rows = data.people.map(p => {
+    const cs = nomiCircoli(p);
     return `<li><div class="row">
       <button class="open" data-act="open-person" data-id="${p.id}">
         ${lvBadge(p.lv)}
         <span class="grow">
           <span class="nm">${esc(p.name)}</span>
-          <span class="sub">${!p.lv ? 'livello da impostare' : (n === 0 ? 'da compilare' : n + (n === 1 ? ' ora libera' : ' ore libere'))}</span>
+          <span class="sub">${cs.length ? esc(cs.join(' · ')) : 'nessun circolo'}</span>
+        </span>
+        <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      ${iconBtn('del-person', p.id, 'Elimina', ICO_TRASH, 'del')}
+    </div></li>`;
+  }).join('');
+  return `<div class="stack"><div class="card"><ul class="list">${rows}</ul></div></div>`;
+}
+
+/* scheda di una persona: nome, livello, circoli */
+function htmlPersona(p) {
+  const n = countSlots(p);
+  return `<div class="stack">
+    <div class="card" style="padding:16px">
+      <div class="fld">
+        <label for="pNome">Nome</label>
+        <input type="text" id="pNome" value="${esc(p.name)}" maxlength="60" autocomplete="off">
+      </div>
+      <div class="fld">
+        <label for="pLv">Livello</label>
+        <select id="pLv">${lvOptions(p.lv || 3)}</select>
+      </div>
+      <div class="fld" style="margin-bottom:4px">
+        <label>In quali circoli</label>
+        ${data.clubs.length
+          ? `<div class="pickrow" id="pClubs">${chipCircoli(p.clubIds || [])}</div>`
+          : `<p class="hint" style="padding:0">Non hai ancora nessun circolo. Creane uno col <b>+</b>.</p>`}
+      </div>
+    </div>
+    <button class="btn" data-act="save-person" style="width:100%">Salva</button>
+    <button class="btn ghost" data-act="open-grid" data-id="${p.id}" style="width:100%">Le sue ore · ${n} segnate</button>
+    <button class="btn wipe" data-act="del-person" data-id="${p.id}" style="width:100%">Elimina persona</button>
+  </div>`;
+}
+function chipCircoli(sel) {
+  return data.clubs.map(c => {
+    const on = sel.indexOf(c.id) >= 0;
+    return `<button type="button" class="pickchip${on ? ' on' : ''}" data-act="toggle-club" data-id="${c.id}" aria-pressed="${on}">
+      <svg class="tick" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+      ${esc(c.name)}
+    </button>`;
+  }).join('');
+}
+
+/* ========================================================================
+   Scheda DISPONIBILITÀ — chi ha segnato quante ore, e si entra nella griglia
+   ======================================================================== */
+function htmlDisponibilita() {
+  if (!data.people.length) {
+    return `<div class="card empty"><strong>Nessuna persona</strong>Aggiungi prima le persone col <b>+</b>, poi qui segni le loro ore.</div>`;
+  }
+  const rows = data.people.map(p => {
+    const n = countSlots(p);
+    return `<li><div class="row">
+      <button class="open" data-act="open-grid" data-id="${p.id}">
+        ${lvBadge(p.lv)}
+        <span class="grow">
+          <span class="nm">${esc(p.name)}</span>
+          <span class="sub">${n === 0 ? 'da compilare' : n + (n === 1 ? ' ora libera' : ' ore libere')}</span>
         </span>
         <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
       </button>
       ${n ? iconBtn('clear-person', p.id, 'Cancella le sue ore', ICO_ERASER, 'eraser') : ''}
-      ${iconBtn('rename-person', p.id, 'Modifica', ICO_PEN)}
-      ${iconBtn('del-person', p.id, 'Elimina', ICO_TRASH, 'del')}
     </div></li>`;
   }).join('');
-
-  // Le disponibilità cambiano ogni settimana: il tasto per azzerarle tutte
-  // compare solo quando c'è davvero qualcosa da cancellare.
-  const wipe = clubHasSlots(c)
-    ? `<button class="btn wipe" data-act="clear-club" style="width:100%">Azzera le ore di tutti</button>
-       <p class="hint" style="text-align:center;margin:8px 0 0">Cancella solo le ore. Nomi e livelli restano.</p>`
-    : '';
-
-  return `<form class="addrow" data-act="add-person">
-      <input name="nome" placeholder="Nome della persona" maxlength="60" autocomplete="off" aria-label="Nome della persona">
-      <select name="lv" aria-label="Livello">${lvOptions(3)}</select>
-      <button class="btn" type="submit">Aggiungi</button>
-    </form>
-    ${c.people.length ? `<div class="card"><ul class="list">${rows}</ul></div>${wipe}`
-      : `<div class="card empty"><strong>Nessuna persona</strong>Aggiungi i nomi col loro livello, poi tocca ognuno per segnare quando può giocare.</div>`}`;
+  const qualcuno = data.people.some(p => countSlots(p) > 0);
+  return `<div class="stack">
+    <div class="card"><ul class="list">${rows}</ul></div>
+    ${qualcuno ? `<button class="btn wipe" data-act="clear-all" style="width:100%">Azzera le ore di tutti</button>
+      <p class="hint" style="text-align:center;margin:0">Cancella solo le ore. Nomi, livelli e circoli restano.</p>` : ''}
+  </div>`;
 }
 
-/* ========================================================================
-   Schermata 3 — griglia di una persona
-   ======================================================================== */
-function renderPerson(c, p) {
+/* ---------- la griglia ---------- */
+function htmlGriglia(p) {
   const n = countSlots(p);
-  document.getElementById('main').innerHTML = `
-    <div class="stack">
-      <div class="toolbar">
-        <span class="pick"><b id="oreTot">${n}</b> ${n === 1 ? 'ora segnata' : 'ore segnate'}</span>
-        <span class="spacer"></span>
-        <button class="btn ghost sm" data-act="all">Tutta la settimana</button>
-        <button class="btn ghost sm" data-act="none">Pulisci</button>
-      </div>
-      <div class="card gridbox">
-        ${gridHtml(p)}
-        <p class="legend">Tocca le caselle per accendere le ore in cui puoi giocare. Tocca <b>Lun</b> per tutto il giorno, o <b>9</b> per quell'ora in tutta la settimana. Ogni riga è la fascia che parte da quell'ora: <b>9</b> vuol dire 9:00–10:00, l'ultima è 21:00–22:00.</p>
-      </div>
-    </div>`;
-  wirePersonGrid();
-}
-
-function gridHtml(p) {
-  let h = '<div class="grid" id="grid"><div class="gh"></div>';
+  let g = '<div class="grid" id="grid"><div class="gh"></div>';
   DAYS.forEach((d, i) => {
-    h += `<button class="gh day" data-act="col" data-d="${i}" title="Tutto ${DAYSL[i].toLowerCase()}" aria-label="Attiva o spegni tutto ${DAYSL[i].toLowerCase()}">${d}</button>`;
+    g += `<button class="gh day" data-act="col" data-d="${i}" aria-label="Attiva o spegni tutto ${DAYSL[i].toLowerCase()}">${d}</button>`;
   });
   HOURS.forEach(hr => {
-    h += `<button class="gh hour" data-act="row" data-h="${hr}" title="${hr}:00–${hr+1}:00 in tutta la settimana" aria-label="Attiva o spegni le ${hr} in tutta la settimana">${hr}</button>`;
+    g += `<button class="gh hour" data-act="row" data-h="${hr}" aria-label="Attiva o spegni le ${hr} in tutta la settimana">${hr}</button>`;
     DAYS.forEach((d, i) => {
       const on = !!(p.slots && p.slots[slotKey(i, hr)]);
-      h += `<button class="cell" data-d="${i}" data-h="${hr}" aria-pressed="${on}" aria-label="${DAYSL[i]} ${hr}:00–${hr+1}:00"></button>`;
+      g += `<button class="cell" data-d="${i}" data-h="${hr}" aria-pressed="${on}" aria-label="${DAYSL[i]} ${hr}:00–${hr+1}:00"></button>`;
     });
   });
-  return h + '</div>';
+  g += '</div>';
+  return `<div class="stack">
+    <div class="toolbar">
+      <span class="pick"><b id="oreTot">${n}</b> ${n === 1 ? 'ora segnata' : 'ore segnate'}</span>
+      <span class="spacer"></span>
+      <button class="btn ghost sm" data-act="all">Tutta la settimana</button>
+      <button class="btn ghost sm" data-act="none">Pulisci</button>
+    </div>
+    <div class="card gridbox">
+      ${g}
+      <p class="legend">Tocca le caselle per accendere le ore in cui può giocare. Tocca <b>Lun</b> per tutto il giorno, o <b>9</b> per quell'ora in tutta la settimana. Ogni riga è la fascia che parte da quell'ora: <b>9</b> vuol dire 9:00–10:00, l'ultima è 21:00–22:00.</p>
+    </div>
+  </div>`;
 }
 
-/* Le caselle si aggiornano una per una, senza ridisegnare tutta la griglia:
-   serve perché col mouse si possa trascinare per accendere più ore di fila. */
 function setSlot(p, d, hr, on) {
   if (!p.slots) p.slots = {};
   const k = slotKey(d, hr);
@@ -602,12 +748,10 @@ function refreshCount(p) {
   el.textContent = n;
   el.parentNode.lastChild.textContent = ' ' + (n === 1 ? 'ora segnata' : 'ore segnate');
 }
-
-function wirePersonGrid() {
+function wireGrid() {
   const grid = document.getElementById('grid');
-  if (!grid) return;
   const p = person();
-  if (!p) return;
+  if (!grid || !p) return;
   const apply = (d, hr, on) => setSlot(p, d, hr, on);
 
   grid.addEventListener('click', e => {
@@ -632,8 +776,8 @@ function wirePersonGrid() {
     }
   });
 
-  // Trascinamento col mouse: sul telefono resta il tocco singolo, altrimenti
-  // il dito non riuscirebbe più a far scorrere la pagina.
+  // trascinamento col mouse; sul telefono resta il tocco, altrimenti il dito
+  // non riuscirebbe più a far scorrere la pagina
   let paint = null;
   grid.addEventListener('pointerdown', e => {
     if (e.pointerType !== 'mouse') return;
@@ -656,18 +800,17 @@ function wirePersonGrid() {
 }
 
 /* ========================================================================
-   Riepilogo — partite possibili e chi c'è ora per ora
+   Dentro un circolo — partite possibili e chi c'è ora per ora
    ======================================================================== */
-function freeAt(c, d, hr) {
+function freeAt(clubId, d, hr) {
   const k = slotKey(d, hr);
-  return c.people.filter(p => p.slots && p.slots[k]);
+  return membri(clubId).filter(p => p.slots && p.slots[k]);
 }
 
-/* Tutte le sfide che stanno in piedi: due persone di livello compatibile
-   (differenza massima 1) che hanno almeno un'ora libera in comune.
-   In cima quelle con più orari, che sono le più facili da far succedere. */
-function findMatches(c) {
-  const ppl = c.people.filter(p => p.lv);
+/* Le sfide che stanno in piedi: due iscritti allo stesso circolo, di livello
+   compatibile (differenza massima 1), con almeno un'ora libera in comune. */
+function findMatches(clubId) {
+  const ppl = membri(clubId).filter(p => p.lv);
   const out = [];
   for (let i = 0; i < ppl.length; i++) {
     for (let j = i + 1; j < ppl.length; j++) {
@@ -686,7 +829,7 @@ function findMatches(c) {
 }
 
 /* Le ore attaccate diventano una fascia sola: 18 e 19 di lunedì si leggono
-   "Lun 18–20", cioè dalle 18 alle 20, invece di due etichette separate. */
+   "Lun 18–20", invece di due etichette separate. */
 function fmtShared(shared) {
   const byDay = {};
   shared.forEach(pair => { (byDay[pair[0]] = byDay[pair[0]] || []).push(pair[1]); });
@@ -704,17 +847,16 @@ function fmtShared(shared) {
   return out;
 }
 
-function matchesHtml(c) {
-  const withLv = c.people.filter(p => p.lv).length;
-  const senzaLv = c.people.length - withLv;
-  const nota = senzaLv
-    ? `<p class="hint" style="padding:8px 4px 0">${senzaLv === 1 ? 'Una persona non ha' : senzaLv + ' persone non hanno'} il livello: ${senzaLv === 1 ? 'impostalo' : 'impostali'} con la matita per ${senzaLv === 1 ? 'vederla' : 'vederle'} qui.</p>`
-    : '';
-
-  const ms = findMatches(c);
+function htmlClub(c) {
+  const ppl = membri(c.id);
+  if (!ppl.length) {
+    return `<div class="card empty"><strong>Nessuno in questo circolo</strong>Apri una persona dalla scheda Persone e mettila in <b>${esc(c.name)}</b>, oppure creane una nuova col <b>+</b>.</div>`;
+  }
+  const senzaLv = ppl.filter(p => !p.lv).length;
+  const ms = findMatches(c.id);
   const shown = view.allMatches ? ms : ms.slice(0, 25);
 
-  const body = ms.length
+  const partite = ms.length
     ? `<div class="card">${shown.map(m => `<div class="match">
           <div class="mt-top">
             <span class="pl">${lvBadge(m.a.lv)}<span>${esc(m.a.name)}</span></span>
@@ -726,18 +868,10 @@ function matchesHtml(c) {
         ${ms.length > shown.length ? `<div style="padding:12px 14px;border-top:1px solid var(--line)"><button class="btn ghost sm" data-act="more-matches" style="width:100%">Mostra tutte le ${ms.length} partite</button></div>` : ''}
       </div>`
     : `<div class="card empty"><strong>Nessuna partita possibile</strong>${
-        withLv < 2 ? 'Servono almeno due persone col livello impostato.'
+        ppl.filter(p => p.lv).length < 2 ? 'Servono almeno due persone col livello impostato.'
         : 'Nessuna coppia di livello vicino (massimo 1 di differenza) ha ore libere in comune.'}</div>`;
 
-  return `<div class="sechead"><h2>Partite possibili</h2><span class="n">${ms.length ? ms.length + (ms.length === 1 ? ' abbinamento' : ' abbinamenti') : ''}</span></div>
-    ${body}${nota}`;
-}
-
-function summaryHtml(c) {
-  if (!c.people.length) {
-    return `<div class="card empty"><strong>Ancora niente da incrociare</strong>Aggiungi le persone e segna le loro ore: qui vedrai quando si trovano tutte insieme.</div>`;
-  }
-  const maxN = c.people.length;
+  const maxN = ppl.length;
   const min = Math.min(view.min, maxN);
   const opts = [];
   for (let i = 1; i <= maxN; i++) opts.push(`<option value="${i}"${i === min ? ' selected' : ''}>almeno ${i}</option>`);
@@ -748,7 +882,7 @@ function summaryHtml(c) {
   HOURS.forEach(hr => {
     g += `<div class="gh hour">${hr}</div>`;
     DAYS.forEach((x, d) => {
-      const n = freeAt(c, d, hr).length;
+      const n = freeAt(c.id, d, hr).length;
       if (n > best) best = n;
       const ok = n >= min && n > 0;
       const f = maxN ? (n / maxN) : 0;
@@ -766,8 +900,8 @@ function summaryHtml(c) {
   let who = '';
   if (view.sel) {
     const [d, hr] = view.sel.split('-').map(Number);
-    const free = freeAt(c, d, hr);
-    const busy = c.people.filter(p => !(p.slots && p.slots[slotKey(d, hr)]));
+    const free = freeAt(c.id, d, hr);
+    const busy = ppl.filter(p => !(p.slots && p.slots[slotKey(d, hr)]));
     who = `<div class="card who">
       <h3>${DAYSL[d]} ${hr}:00–${hr+1}:00 · ${free.length} ${free.length === 1 ? 'disponibile' : 'disponibili'}</h3>
       ${free.length ? `<div class="chips">${free.map(p => `<span class="chip">${esc(p.name)}</span>`).join('')}</div>`
@@ -776,13 +910,14 @@ function summaryHtml(c) {
     </div>`;
   }
 
-  return `${matchesHtml(c)}
+  return `<div class="stack">
+    <div class="sechead"><h2>Partite possibili</h2><span class="n">${ms.length ? ms.length + (ms.length === 1 ? ' abbinamento' : ' abbinamenti') : ''}</span></div>
+    ${partite}
+    ${senzaLv ? `<p class="hint">${senzaLv === 1 ? 'Una persona non ha' : senzaLv + ' persone non hanno'} il livello: ${senzaLv === 1 ? 'impostalo' : 'impostali'} dalla scheda Persone per ${senzaLv === 1 ? 'vederla' : 'vederle'} qui.</p>` : ''}
     <div class="sechead" style="padding-top:8px"><h2>Chi c'è, ora per ora</h2></div>
     <div class="toolbar">
-      <span class="pick">
-        <label for="minSel">Mostra le ore con</label>
-        <select id="minSel" data-act="min">${opts.join('')}</select>
-      </span>
+      <span class="pick"><label for="minSel">Mostra le ore con</label>
+        <select id="minSel">${opts.join('')}</select></span>
       <span class="spacer"></span>
       <span class="pick">massimo insieme: <b>${best}</b> su ${maxN}</span>
     </div>
@@ -790,7 +925,8 @@ function summaryHtml(c) {
       ${g}
       <p class="legend">Il numero dice quante persone sono libere in quella fascia. <b>Terra rossa piena</b> = ci sono almeno quelle che hai chiesto qui sopra. Tocca una casella per vedere chi.</p>
     </div>
-    ${who}`;
+    ${who}
+  </div>`;
 }
 function wireSummary() {
   const sel = document.getElementById('minSel');
@@ -798,7 +934,7 @@ function wireSummary() {
 }
 
 /* ========================================================================
-   Righe, icone e azioni comuni
+   Icone
    ======================================================================== */
 const ICO_PEN    = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
 const ICO_TRASH  = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>';
@@ -806,108 +942,187 @@ const ICO_ERASER = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" 
 function iconBtn(act, id, label, ico, extra) {
   return `<button class="iconbtn ${extra || ''}" data-act="${act}" data-id="${id}" title="${label}" aria-label="${label}">${ico}</button>`;
 }
-function renameRow(id, name, kind, lv) {
-  return `<li><form class="renameform" data-act="save-rename" data-id="${id}" data-kind="${kind}">
-      <input name="nome" value="${esc(name)}" maxlength="60" autocomplete="off" aria-label="Nuovo nome">
-      ${kind === 'person' ? `<select name="lv" aria-label="Livello">${lvOptions(lv || 3)}</select>` : ''}
-      <button class="btn sm" type="submit">Salva</button>
-      <button class="btn ghost sm" type="button" data-act="cancel-rename">Annulla</button>
-    </form></li>`;
-}
 
-document.getElementById('main').addEventListener('submit', e => {
-  const form = e.target.closest('form');
-  if (!form) return;
-  e.preventDefault();
-  const act = form.dataset.act;
-  const val = (form.elements.nome ? form.elements.nome.value : '').trim();
+/* ========================================================================
+   Finestra del +
+   ======================================================================== */
+const $modalBg = document.getElementById('modalBg');
+const $modal = document.getElementById('modal');
+function openModal(html) { $modal.innerHTML = html; $modalBg.classList.add('open'); }
+function closeModal() { $modalBg.classList.remove('open'); }
+$modalBg.addEventListener('click', e => { if (e.target === $modalBg) closeModal(); });
 
-  if (act === 'add-club') {
-    if (!val) return;
-    data.clubs.push({ id: uid(), name: val, people: [] });
-    save(); render();
-  } else if (act === 'add-person') {
-    if (!val) return;
-    const c = club(); if (!c) return;
-    const lv = form.elements.lv ? +form.elements.lv.value : 3;
-    c.people.push({ id: uid(), name: val, lv: lv, slots: {} });
-    save(); render();
-  } else if (act === 'save-rename') {
-    if (val) {
-      const id = form.dataset.id;
-      if (form.dataset.kind === 'club') {
-        const c = data.clubs.find(x => x.id === id); if (c) c.name = val;
-      } else {
-        const c = club(); const p = c && c.people.find(x => x.id === id);
-        if (p) { p.name = val; if (form.elements.lv) p.lv = +form.elements.lv.value; }
-      }
-      save();
-    }
-    view.renaming = null; render();
-  }
+const IC_CLUB = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2"/><path d="M3 12h18M12 4.5v15"/></svg>';
+const IC_PERS = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>';
+const IC_ORE  = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.2"/><path d="M3 9.5h18M8 2.8v3.4M16 2.8v3.4"/></svg>';
+
+document.getElementById('btnAdd').addEventListener('click', () => {
+  openModal(`<h3>Cosa vuoi aggiungere?</h3>
+    <button class="bigchoice" data-act="new-club">
+      <span class="ic">${IC_CLUB}</span>
+      <span class="tx"><span class="t1">Nuovo circolo</span><span class="t2">Un posto dove si gioca</span></span>
+    </button>
+    <button class="bigchoice" data-act="new-person">
+      <span class="ic">${IC_PERS}</span>
+      <span class="tx"><span class="t1">Nuova persona</span><span class="t2">Con livello e uno o più circoli</span></span>
+    </button>
+    <button class="bigchoice" data-act="pick-grid">
+      <span class="ic">${IC_ORE}</span>
+      <span class="tx"><span class="t1">Segna disponibilità</span><span class="t2">Scegli chi e segna le sue ore</span></span>
+    </button>`);
 });
 
-document.getElementById('main').addEventListener('click', e => {
+function modalNuovoCircolo(id) {
+  const c = id ? clubById(id) : null;
+  openModal(`<h3>${c ? 'Rinomina circolo' : 'Nuovo circolo'}</h3>
+    <div class="fld">
+      <label for="mNome">Nome del circolo</label>
+      <input type="text" id="mNome" maxlength="60" autocomplete="off" placeholder="Es. Circolo Laurera" value="${c ? esc(c.name) : ''}">
+    </div>
+    <button class="btn" data-act="${c ? 'do-edit-club' : 'do-new-club'}" data-id="${c ? c.id : ''}" style="width:100%">${c ? 'Salva' : 'Crea'}</button>`);
+  setTimeout(() => { const i = document.getElementById('mNome'); if (i) { i.focus(); i.select(); } }, 60);
+}
+function modalNuovaPersona() {
+  openModal(`<h3>Nuova persona</h3>
+    <div class="fld">
+      <label for="mNome">Nome</label>
+      <input type="text" id="mNome" maxlength="60" autocomplete="off" placeholder="Es. Andrea Dellepiane">
+    </div>
+    <div class="fld">
+      <label for="mLv">Livello</label>
+      <select id="mLv">${lvOptions(3)}</select>
+    </div>
+    <div class="fld">
+      <label>In quali circoli</label>
+      ${data.clubs.length
+        ? `<div class="pickrow" id="mClubs">${chipCircoli([])}</div>`
+        : `<p class="hint" style="padding:0">Non hai ancora nessun circolo: puoi crearla lo stesso e metterla in un circolo dopo.</p>`}
+    </div>
+    <button class="btn" data-act="do-new-person" style="width:100%">Aggiungi</button>`);
+  setTimeout(() => { const i = document.getElementById('mNome'); if (i) i.focus(); }, 60);
+}
+function modalScegliPersona() {
+  if (!data.people.length) {
+    openModal(`<h3>Segna disponibilità</h3>
+      <p class="hint" style="padding:0 0 14px">Prima devi aggiungere almeno una persona.</p>
+      <button class="btn" data-act="new-person" style="width:100%">Nuova persona</button>`);
+    return;
+  }
+  const rows = data.people.map(p => {
+    const n = countSlots(p);
+    return `<button class="bigchoice" data-act="do-pick-grid" data-id="${p.id}">
+      <span class="ic" style="background:transparent;padding:0">${lvBadge(p.lv)}</span>
+      <span class="tx"><span class="t1">${esc(p.name)}</span><span class="t2">${n === 0 ? 'da compilare' : n + (n === 1 ? ' ora libera' : ' ore libere')}</span></span>
+    </button>`;
+  }).join('');
+  openModal(`<h3>Di chi segni le ore?</h3>${rows}`);
+}
+
+/* ========================================================================
+   Azioni
+   ======================================================================== */
+document.addEventListener('click', e => {
   const btn = e.target.closest('[data-act]');
-  if (!btn || btn.tagName === 'FORM') return;
+  if (!btn) return;
   const act = btn.dataset.act, id = btn.dataset.id;
 
-  if (act === 'open-club') {
-    view.clubId = id; view.screen = 'club'; view.tab = 'persone'; view.sel = null; view.min = 2; view.allMatches = false;
-    render(); window.scrollTo(0, 0);
-  } else if (act === 'open-person') {
-    view.personId = id; view.screen = 'person';
-    render(); window.scrollTo(0, 0);
-  } else if (act === 'tab') {
-    view.tab = btn.dataset.tab; view.sel = null; view.allMatches = false; render();
-  } else if (act === 'rename-club' || act === 'rename-person') {
-    view.renaming = id; render();
-    const inp = document.querySelector('.renameform input');
-    if (inp) { inp.focus(); inp.select(); }
-  } else if (act === 'cancel-rename') {
-    view.renaming = null; render();
-  } else if (act === 'del-club') {
-    const c = data.clubs.find(x => x.id === id); if (!c) return;
-    const n = c.people.length;
-    if (!confirm(n ? 'Eliminare "' + c.name + '" e le disponibilità delle sue ' + n + ' persone?' : 'Eliminare "' + c.name + '"?')) return;
+  /* --- navigazione --- */
+  if (act === 'open-club') { view.clubId = id; view.screen = 'club'; view.sel = null; view.min = 2; view.allMatches = false; render(); window.scrollTo(0,0); }
+  else if (act === 'open-person') { view.personId = id; view.screen = 'persona'; render(); window.scrollTo(0,0); }
+  else if (act === 'open-grid') { view.personId = id; view.screen = 'griglia'; closeModal(); render(); window.scrollTo(0,0); }
+  else if (act === 'do-pick-grid') { view.personId = id; view.screen = 'griglia'; view.tab = 'disponibilita'; closeModal(); render(); window.scrollTo(0,0); }
+  else if (act === 'more-matches') { view.allMatches = true; render(); }
+  else if (act === 'peek') {
+    const k = slotKey(+btn.dataset.d, +btn.dataset.h);
+    view.sel = (view.sel === k) ? null : k;
+    render();
+  }
+
+  /* --- finestre del + --- */
+  else if (act === 'new-club') modalNuovoCircolo(null);
+  else if (act === 'new-person') modalNuovaPersona();
+  else if (act === 'pick-grid') modalScegliPersona();
+  else if (act === 'edit-club') modalNuovoCircolo(id);
+
+  else if (act === 'do-new-club') {
+    const v = (document.getElementById('mNome').value || '').trim();
+    if (!v) return;
+    data.clubs.push({ id: uid(), name: v });
+    save(); closeModal(); view.tab = 'circoli'; view.screen = null; render();
+  }
+  else if (act === 'do-edit-club') {
+    const v = (document.getElementById('mNome').value || '').trim();
+    if (!v) return;
+    const c = clubById(id); if (c) c.name = v;
+    save(); closeModal(); render();
+  }
+  else if (act === 'do-new-person') {
+    const v = (document.getElementById('mNome').value || '').trim();
+    if (!v) return;
+    const lv = +document.getElementById('mLv').value;
+    const scelti = Array.prototype.slice.call(document.querySelectorAll('#mClubs .pickchip.on')).map(b => b.dataset.id);
+    data.people.push({ id: uid(), name: v, lv: lv, clubIds: scelti, slots: {} });
+    save(); closeModal(); view.tab = 'persone'; view.screen = null; render();
+  }
+
+  /* --- chip dei circoli: valgono sia nella finestra sia nella scheda persona --- */
+  else if (act === 'toggle-club') {
+    const on = btn.classList.toggle('on');
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+
+  /* --- scheda persona --- */
+  else if (act === 'save-person') {
+    const p = person(); if (!p) return;
+    const v = (document.getElementById('pNome').value || '').trim();
+    if (!v) { document.getElementById('pNome').focus(); return; }
+    p.name = v;
+    p.lv = +document.getElementById('pLv').value;
+    p.clubIds = Array.prototype.slice.call(document.querySelectorAll('#pClubs .pickchip.on')).map(b => b.dataset.id);
+    save(); view.screen = null; view.tab = 'persone'; render(); window.scrollTo(0,0);
+  }
+
+  /* --- cancellazioni --- */
+  else if (act === 'del-club') {
+    const c = clubById(id); if (!c) return;
+    const n = membri(c.id).length;
+    if (!confirm(n ? 'Eliminare "' + c.name + '"?\n\nLe ' + n + ' persone che ne fanno parte restano, ma non saranno più iscritte a questo circolo.' : 'Eliminare "' + c.name + '"?')) return;
     data.clubs = data.clubs.filter(x => x.id !== id);
+    data.people.forEach(p => { p.clubIds = (p.clubIds || []).filter(x => x !== id); });
+    if (view.clubId === id) { view.screen = null; view.clubId = null; }
     save(); render();
-  } else if (act === 'del-person') {
-    const c = club(); if (!c) return;
-    const p = c.people.find(x => x.id === id); if (!p) return;
+  }
+  else if (act === 'del-person') {
+    const p = personById(id); if (!p) return;
     if (!confirm('Eliminare "' + p.name + '" e le sue disponibilità?')) return;
-    c.people = c.people.filter(x => x.id !== id);
+    data.people = data.people.filter(x => x.id !== id);
+    if (view.personId === id) { view.screen = null; view.personId = null; }
     save(); render();
-  } else if (act === 'clear-person') {
-    // cancella solo le ore: la persona e il suo livello restano
-    const c = club(); if (!c) return;
-    const p = c.people.find(x => x.id === id); if (!p) return;
+  }
+  else if (act === 'clear-person') {
+    const p = personById(id); if (!p) return;
     const n = countSlots(p);
     if (!n) return;
-    if (!confirm('Cancellare le ' + n + (n === 1 ? ' ora' : ' ore') + ' di ' + p.name + '? Nome e livello restano.')) return;
+    if (!confirm('Cancellare le ' + n + (n === 1 ? ' ora' : ' ore') + ' di ' + p.name + '? Nome, livello e circoli restano.')) return;
     p.slots = {};
     save(); render();
-  } else if (act === 'clear-club') {
-    // il giro di pulizia di inizio settimana
-    const c = club(); if (!c) return;
-    const quanti = c.people.filter(p => countSlots(p) > 0).length;
+  }
+  else if (act === 'clear-all') {
+    const quanti = data.people.filter(p => countSlots(p) > 0).length;
     if (!quanti) return;
-    if (!confirm('Cancellare le ore di ' + (quanti === 1 ? 'una persona' : 'tutte e ' + quanti + ' le persone') + ' di ' + c.name + '?\n\nNomi e livelli restano: si riparte con la settimana pulita.')) return;
-    c.people.forEach(p => { p.slots = {}; });
+    if (!confirm('Cancellare le ore di ' + (quanti === 1 ? 'una persona' : 'tutte e ' + quanti + ' le persone') + '?\n\nNomi, livelli e circoli restano: si riparte con la settimana pulita.')) return;
+    data.people.forEach(p => { p.slots = {}; });
     save(); render();
-  } else if (act === 'all' || act === 'none') {
+  }
+
+  /* --- griglia --- */
+  else if (act === 'all' || act === 'none') {
     const p = person(); if (!p) return;
     const on = act === 'all';
     if (!on && !confirm('Togliere tutte le ore segnate di ' + p.name + '?')) return;
     p.slots = {};
     if (on) DAYS.forEach((x, d) => HOURS.forEach(hr => { p.slots[slotKey(d, hr)] = true; }));
     save(); render();
-  } else if (act === 'more-matches') {
-    view.allMatches = true; render();
-  } else if (act === 'peek') {
-    const k = slotKey(+btn.dataset.d, +btn.dataset.h);
-    view.sel = (view.sel === k) ? null : k;
-    render();
   }
 });
 
@@ -950,23 +1165,21 @@ const $dot   = document.getElementById('acctDot');
 const $panel = document.getElementById('acctPanel');
 
 let user = null;
-let stop = null;        // chiude l'ascolto sul documento quando si esce
-let timer = null;       // salvataggio ritardato: si scrive quando smetti di toccare
-let mineAt = 0;         // ora dell'ultima scrittura fatta da questo dispositivo
-let stato = 'off';      // off | ok | busy | err
+let stop = null;
+let timer = null;
+let mineAt = 0;
+let stato = 'off';
 let nota = 'Non stai sincronizzando';
 
 const ICO_USER = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>';
 
-$acct.hidden = false;   // Firebase c'è: mostriamo il tasto
+$acct.hidden = false;
 
 function paint() {
   $dot.className = 'dot' + (stato === 'ok' ? ' on' : stato === 'busy' ? ' busy' : stato === 'err' ? ' err' : '');
-  if (user && user.photoURL) {
-    $ico.innerHTML = '<img src="' + user.photoURL + '" alt="" referrerpolicy="no-referrer">';
-  } else {
-    $ico.innerHTML = ICO_USER;
-  }
+  $ico.innerHTML = (user && user.photoURL)
+    ? '<img src="' + user.photoURL + '" alt="" referrerpolicy="no-referrer">'
+    : ICO_USER;
   if (!$panel.hidden) drawPanel();
 }
 function setStato(s, n) { stato = s; if (n) nota = n; paint(); }
@@ -985,7 +1198,7 @@ function drawPanel() {
   } else {
     $panel.innerHTML =
       '<h4>Sincronizza</h4>' +
-      '<div class="st">Entra col tuo Google e ritrovi circoli, nomi e ore su tutti i tuoi dispositivi.</div>' +
+      '<div class="st">Entra col tuo Google e ritrovi circoli, persone e ore su tutti i tuoi dispositivi.</div>' +
       '<button class="btn sm" id="btnIn">Entra con Google</button>';
     document.getElementById('btnIn').onclick = () => { $panel.hidden = true; entra(); };
   }
@@ -1014,8 +1227,8 @@ getRedirectResult(auth).catch(() => {});
 
 const rif = u => doc(db, 'utenti', u.uid);
 
-/* Prima cosa dopo il login: capire chi ha la versione buona.
-   Non si sovrascrive mai in silenzio, la più recente vince e lo diciamo. */
+/* Dopo il login si capisce chi ha la versione buona: non si sovrascrive mai
+   in silenzio, la più recente vince e lo diciamo. */
 async function allinea() {
   const locale = window.syncGetData();
   const localeVuoto = !window.syncHasData();
@@ -1031,11 +1244,11 @@ async function allinea() {
     setStato('err', 'Non riesco a leggere i dati salvati');
     return;
   }
-  const remotoVuoto = !remoto || !Array.isArray(remoto.clubs) || !remoto.clubs.length;
+  const vuotoRem = !remoto || ((!Array.isArray(remoto.clubs) || !remoto.clubs.length) && (!Array.isArray(remoto.people) || !remoto.people.length));
 
-  if (remotoVuoto && localeVuoto) { setStato('ok', 'Tutto sincronizzato'); return; }
-  if (remotoVuoto)  { await scrivi(locale, 'Ho caricato i dati di questo dispositivo'); return; }
-  if (localeVuoto)  { window.syncAdopt(remoto); setStato('ok', 'Ho scaricato i tuoi dati'); return; }
+  if (vuotoRem && localeVuoto) { setStato('ok', 'Tutto sincronizzato'); return; }
+  if (vuotoRem)   { await scrivi(locale, 'Ho caricato i dati di questo dispositivo'); return; }
+  if (localeVuoto) { window.syncAdopt(remoto); setStato('ok', 'Ho scaricato i tuoi dati'); return; }
 
   const tLoc = locale.aggiornato || 0, tRem = remoto.aggiornato || 0;
   if (tRem > tLoc) {
@@ -1055,14 +1268,13 @@ async function scrivi(d, msg) {
     mineAt = quando;
     setStato('ok', msg || 'Tutto sincronizzato');
   } catch (e) {
-    // senza rete Firebase riprova da solo appena torna: non è un errore da urlare
     setStato('err', navigator.onLine ? 'Salvataggio non riuscito' : 'Sei offline, salvo appena torna la rete');
   }
 }
 
-/* L'app chiama questa a ogni modifica. Si aspetta un attimo di calma prima di
+/* L'app chiama questa a ogni modifica: si aspetta un attimo di calma prima di
    scrivere, così trascinare venti caselle non diventa venti scritture. */
-window.syncPush = function (d) {
+window.syncPush = function () {
   if (!user) return;
   setStato('busy', 'Sto salvando…');
   clearTimeout(timer);
@@ -1072,15 +1284,14 @@ window.syncPush = function (d) {
 function ascolta() {
   if (stop) { stop(); stop = null; }
   stop = onSnapshot(rif(user), snap => {
-    // l'eco della nostra stessa scrittura non ci interessa
     if (snap.metadata.hasPendingWrites || !snap.exists()) return;
     const raw = snap.data();
     if (!raw || typeof raw.dati !== 'string') return;
     const quando = raw.aggiornato || 0;
-    if (quando <= mineAt) return;          // già nostro, o più vecchio
+    if (quando <= mineAt) return;
     let remoto = null;
     try { remoto = JSON.parse(raw.dati); } catch (e) { return; }
-    if (!remoto || !Array.isArray(remoto.clubs)) return;
+    if (!remoto || typeof remoto !== 'object') return;
     remoto.aggiornato = quando;
     mineAt = quando;
     window.syncAdopt(remoto);
